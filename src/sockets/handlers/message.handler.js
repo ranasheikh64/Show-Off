@@ -5,9 +5,9 @@ module.exports = (io, socket) => {
     
     socket.on("send_message", async (data, callback) => {
         try {
-            const { chatId, content, replyTo } = data; // replyTo is optional message ID
+            const { chatId, content, replyTo, duration } = data; // replyTo and duration are optional
             
-            const message = await messageService.saveMessage(chatId, socket.user.id, content, replyTo);
+            const message = await messageService.saveMessage(chatId, socket.user.id, content, replyTo, duration);
             
             // Emit to the specific chat room (for users who have the chat screen open)
             io.to(chatId).emit("new_message", message);
@@ -33,7 +33,7 @@ module.exports = (io, socket) => {
             const { chatId, page, limit, password } = data;
             
             // Verify lock if any
-            const isVerified = await chatService.verifyChatLock(chatId, password);
+            const isVerified = await chatService.verifyChatLock(chatId, socket.user.id, password);
             if (!isVerified) {
                 return callback({ success: false, message: "Invalid chat password" });
             }

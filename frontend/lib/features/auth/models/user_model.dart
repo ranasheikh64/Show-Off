@@ -6,6 +6,8 @@ class UserModel {
   final String? profileImage;
   final String? gender;
   final int? age;
+  final bool isBlocked;
+  final bool isBlockedBy;
 
   UserModel({
     required this.id,
@@ -15,6 +17,8 @@ class UserModel {
     this.profileImage,
     this.gender,
     this.age,
+    this.isBlocked = false,
+    this.isBlockedBy = false,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class UserModel {
       profileImage: json['profileImage'],
       gender: json['gender'],
       age: json['age'],
+      isBlocked: json['isBlocked'] ?? false,
+      isBlockedBy: json['isBlockedBy'] ?? false,
     );
   }
 
@@ -38,6 +44,8 @@ class UserModel {
       'profileImage': profileImage,
       'gender': gender,
       'age': age,
+      'isBlocked': isBlocked,
+      'isBlockedBy': isBlockedBy,
     };
   }
 }

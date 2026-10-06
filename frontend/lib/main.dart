@@ -19,6 +19,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -27,6 +29,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
+          scaffoldMessengerKey: scaffoldMessengerKey,
           title: 'WebRTC Chat',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,

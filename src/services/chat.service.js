@@ -11,14 +11,15 @@ const getOrCreateDirectChat = async (userId, otherUserId) => {
         ]
     }).populate('users', '-password');
 
-    if (chat) return chat;
+    if (chat) return formatChatsForUser([chat], userId)[0];
 
     const newChat = new Chat({
         isGroupChat: false,
         users: [userId, otherUserId]
     });
     await newChat.save();
-    return await Chat.findById(newChat._id).populate('users', '-password');
+    chat = await Chat.findById(newChat._id).populate('users', '-password');
+    return formatChatsForUser([chat], userId)[0];
 };
 
 const createGroupChat = async (adminId, users, chatName) => {
@@ -35,66 +36,108 @@ const createGroupChat = async (adminId, users, chatName) => {
     });
     
     await groupChat.save();
-    return await Chat.findById(groupChat._id).populate('users', '-password');
+    const chat = await Chat.findById(groupChat._id).populate('users', '-password');
+    return formatChatsForUser([chat], adminId)[0];
 };
 
-const blockUser = async (blockerId, blockedId) => {
-    const existing = await Block.findOne({ blocker: blockerId, blocked: blockedId });
-    if (existing) return existing;
+const User = require('../models/user.model');
 
-    const block = new Block({ blocker: blockerId, blocked: blockedId });
-    await block.save();
-    return block;
+const blockUser = async (blockerId, blockedId) => {
+    const blocker = await User.findById(blockerId);
+    const blocked = await User.findById(blockedId);
+
+    if (!blocker || !blocked) throw new Error("User not found");
+
+    if (!blocker.blockedUsers.includes(blockedId)) {
+        blocker.blockedUsers.push(blockedId);
+        await blocker.save();
+    }
+    if (!blocked.blockedBy.includes(blockerId)) {
+        blocked.blockedBy.push(blockerId);
+        await blocked.save();
+    }
+
+    return { success: true };
 };
 
 const unblockUser = async (blockerId, blockedId) => {
-    await Block.findOneAndDelete({ blocker: blockerId, blocked: blockedId });
+    await User.findByIdAndUpdate(blockerId, { $pull: { blockedUsers: blockedId } });
+    await User.findByIdAndUpdate(blockedId, { $pull: { blockedBy: blockerId } });
     return true;
 };
 
 const isBlocked = async (userId1, userId2) => {
-    const block = await Block.findOne({
-        $or: [
-            { blocker: userId1, blocked: userId2 },
-            { blocker: userId2, blocked: userId1 }
-        ]
-    });
-    return !!block;
+    const user1 = await User.findById(userId1);
+    if (!user1) return false;
+    return user1.blockedUsers.includes(userId2) || user1.blockedBy.includes(userId2);
 };
 
-const setChatLock = async (chatId, adminId, password) => {
+const setChatLock = async (chatId, userId, password) => {
     const chat = await Chat.findById(chatId);
     if (!chat) throw new Error("Chat not found");
-    
-    if (chat.isGroupChat && chat.admin.toString() !== adminId.toString()) {
-        throw new Error("Only admin can lock the group chat");
+
+    if (!password) {
+        await Chat.findByIdAndUpdate(chatId, { $pull: { lockedBy: { user: userId } } });
+        return await Chat.findById(chatId);
     }
 
     const salt = await bcrypt.genSalt(10);
-    chat.chatPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const lockIndex = chat.lockedBy.findIndex(l => l.user.toString() === userId.toString());
+    if (lockIndex > -1) {
+        chat.lockedBy[lockIndex].password = hashedPassword;
+        chat.markModified('lockedBy');
+    } else {
+        chat.lockedBy.push({ user: userId, password: hashedPassword });
+    }
+
     await chat.save();
     return chat;
 };
 
-const verifyChatLock = async (chatId, password) => {
+const verifyChatLock = async (chatId, userId, password) => {
     const chat = await Chat.findById(chatId);
     if (!chat) throw new Error("Chat not found");
-    if (!chat.chatPassword) return true; // not locked
+    
+    const lock = chat.lockedBy.find(l => l.user.toString() === userId.toString());
+    if (!lock) return true; // not locked by this user
 
-    return await bcrypt.compare(password, chat.chatPassword);
+    if (!password) return false; // password required but not provided
+    return await bcrypt.compare(password, lock.password);
 };
 
-const setDisappearingTimer = async (chatId, seconds) => {
+const setDisappearingTimer = async (chatId, seconds, userId) => {
     const chat = await Chat.findById(chatId);
     if (!chat) throw new Error("Chat not found");
     
     chat.disappearingTimer = seconds;
+    chat.disappearingTimerSetBy = seconds > 0 ? userId : null;
     await chat.save();
     return chat;
 };
 
+function formatChatsForUser(chats, currentUserId) {
+    return chats.map(chat => {
+        let chatObj = chat.toObject ? chat.toObject() : chat;
+        
+        chatObj.isLocked = (chatObj.lockedBy || []).some(l => l.user.toString() === currentUserId.toString());
+        delete chatObj.lockedBy; // Security: Never send password hash to frontend
+
+        if (chatObj.users) {
+            chatObj.users = chatObj.users.map(u => {
+                const uid = currentUserId.toString();
+                u.isBlocked = (u.blockedBy || []).some(id => id.toString() === uid);
+                u.isBlockedBy = (u.blockedUsers || []).some(id => id.toString() === uid);
+                return u;
+            });
+        }
+        return chatObj;
+    });
+}
+
 const fetchUserChats = async (userId) => {
-    return await Chat.find({
+    const chats = await Chat.find({
         users: { $elemMatch: { $eq: userId } },
         deletedBy: { $ne: userId } // Do not fetch chats deleted by this user
     })
@@ -105,6 +148,8 @@ const fetchUserChats = async (userId) => {
             populate: { path: 'sender', select: 'name username email' }
         })
         .sort({ updatedAt: -1 });
+    
+    return formatChatsForUser(chats, userId);
 };
 
 const muteChat = async (chatId, userId, durationInHours) => {

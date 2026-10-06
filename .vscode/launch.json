@@ -5,34 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "app",
-            "cwd": "app",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "app (profile mode)",
-            "cwd": "app",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "app (release mode)",
-            "cwd": "app",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
             "name": "frontend",
             "cwd": "frontend",
+            "program": "lib/main.dart",
             "request": "launch",
             "type": "dart"
         },
         {
             "name": "frontend (profile mode)",
             "cwd": "frontend",
+            "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
@@ -40,6 +22,7 @@
         {
             "name": "frontend (release mode)",
             "cwd": "frontend",
+            "program": "lib/main.dart",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

@@ -25,11 +25,11 @@ class ChatApiService {
     return data.map((json) => UserModel.fromJson(json)).toList();
   }
 
-  Future<String> uploadMedia(String filePath) async {
+  Future<String> uploadMedia(String filePath, {void Function(int, int)? onSendProgress}) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath),
     });
-    final response = await _dio.post(ApiUrl.uploadMedia, data: formData);
+    final response = await _dio.post(ApiUrl.uploadMedia, data: formData, onSendProgress: onSendProgress);
     return response.data['url'];
   }
 }

@@ -45,6 +45,14 @@ dependencies:
   path_provider: ^2.1.6
   image_picker: ^1.2.4
   jwt_decoder: ^2.0.1
+  shimmer: ^4.0.0
+  animated_emoji: ^3.3.0
+  popover: ^0.4.0
+  emoji_picker_flutter: ^4.5.4
+  record: ^7.1.1
+  permission_handler: ^13.0.2
+  audioplayers: ^6.8.1
+  scroll_to_index: ^3.0.1
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,7 @@ const Message = require('../models/message.model');
 const Chat = require('../models/chat.model');
 const chatService = require('./chat.service');
 
-const saveMessage = async (chatId, senderId, content, replyTo = null) => {
+const saveMessage = async (chatId, senderId, content, replyTo = null, duration = null) => {
     const chat = await Chat.findById(chatId);
     if (!chat) throw new Error("Chat not found");
 
@@ -24,6 +24,7 @@ const saveMessage = async (chatId, senderId, content, replyTo = null) => {
         sender: senderId,
         content,
         replyTo,
+        duration,
         expiresAt
     });
 
@@ -146,3 +147,25 @@ module.exports = {
     reactToMessage,
     deleteMessage
 };
+
+const saveSystemMessage = async (chatId, senderId, content) => {
+    const chat = await Chat.findById(chatId);
+    if (!chat) throw new Error("Chat not found");
+
+    const newMessage = new Message({
+        chat: chatId,
+        sender: senderId,
+        content,
+        isSystemMessage: true
+    });
+
+    await newMessage.save();
+    
+    chat.latestMessage = newMessage._id;
+    await chat.save();
+    
+    return await Message.findById(newMessage._id)
+        .populate('sender', 'name username email avatar');
+};
+
+module.exports.saveSystemMessage = saveSystemMessage;

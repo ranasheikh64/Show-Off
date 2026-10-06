@@ -68,6 +68,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
       ),
       title: Text(name, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp)),
       subtitle: Text(msg, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondary, fontSize: 14.sp)),
+      trailing: chat.unreadCount > 0
+          ? Container(
+              padding: EdgeInsets.all(6.w),
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                chat.unreadCount.toString(),
+                style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
+              ),
+            )
+          : null,
       onTap: () {
         context.push('/chat/${chat.id}', extra: name);
       },

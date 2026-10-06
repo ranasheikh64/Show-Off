@@ -5,8 +5,14 @@ const chatSchema = new mongoose.Schema({
     chatName: { type: String, trim: true },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     admin: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    chatPassword: { type: String, default: null }, // Hashed password for locked chats
+    lockedBy: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            password: { type: String } // Hashed password for this specific user
+        }
+    ],
     disappearingTimer: { type: Number, default: 0 }, // In seconds, 0 means disabled
+    disappearingTimerSetBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     latestMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
     pinnedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     favouritedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

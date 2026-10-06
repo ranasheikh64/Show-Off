@@ -1,4 +1,5 @@
 const chatService = require('../../services/chat.service');
+const messageService = require('../../services/message.service');
 
 module.exports = (io, socket) => {
     
@@ -42,6 +43,10 @@ module.exports = (io, socket) => {
         try {
             const { blockedId } = data;
             await chatService.blockUser(socket.user.id, blockedId);
+            
+            io.to(socket.user.id).emit("user_blocked", { blockerId: socket.user.id, blockedId });
+            io.to(blockedId).emit("user_blocked", { blockerId: socket.user.id, blockedId });
+            
             if (callback) callback({ success: true });
         } catch (error) {
             if (callback) callback({ success: false, message: error.message });
@@ -52,6 +57,10 @@ module.exports = (io, socket) => {
         try {
             const { blockedId } = data;
             await chatService.unblockUser(socket.user.id, blockedId);
+            
+            io.to(socket.user.id).emit("user_unblocked", { blockerId: socket.user.id, blockedId });
+            io.to(blockedId).emit("user_unblocked", { blockerId: socket.user.id, blockedId });
+            
             if (callback) callback({ success: true });
         } catch (error) {
             if (callback) callback({ success: false, message: error.message });
@@ -71,10 +80,23 @@ module.exports = (io, socket) => {
     socket.on("set_temporary_timer", async (data, callback) => {
         try {
             const { chatId, seconds } = data;
-            await chatService.setDisappearingTimer(chatId, seconds);
-            io.to(chatId).emit("timer_updated", { chatId, seconds });
+            console.log(`[Disappearing Messages] User ${socket.user.id} turning on/off timer for chat ${chatId} (${seconds}s)`);
+            await chatService.setDisappearingTimer(chatId, seconds, socket.user.id);
+            
+            // Create a system message
+            const content = seconds === 0 ? "timer_off" : `timer_on_${seconds}`;
+            const sysMsg = await messageService.saveSystemMessage(chatId, socket.user.id, content);
+            
+            // Emit timer update
+            io.to(chatId).emit("timer_updated", { chatId, seconds, setBy: socket.user.id });
+            
+            // Emit the system message so clients render the bubble
+            io.to(chatId).emit("new_message", sysMsg);
+            
+            console.log(`[Disappearing Messages] Timer updated and event emitted to chat ${chatId}`);
             if (callback) callback({ success: true });
         } catch (error) {
+            console.error(`[Disappearing Messages] Error: ${error.message}`);
             if (callback) callback({ success: false, message: error.message });
         }
     });
