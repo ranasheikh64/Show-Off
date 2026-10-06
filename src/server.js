@@ -6,6 +6,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const userRoutes = require('./routes/user.routes');
+const chatRoutes = require('./routes/chat.routes');
 
 const http = require('http');
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chats', chatRoutes);
 app.get("/", (req, res) => {
     res.send("Backend server is running");
 })
@@ -35,6 +37,6 @@ initSockets(server);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

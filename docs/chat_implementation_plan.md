@@ -55,6 +55,7 @@ Handles user blocking to keep it decoupled from the core User model.
 
 ### Connection & Authentication
 - Socket middleware will verify the JWT token before allowing connection.
+- **IMPORTANT**: The client MUST pass the token using the `Authorization` header in the format `Bearer <token>`. The server will strictly validate the Bearer prefix and extract the token from `socket.handshake.headers.authorization`.
 - Each user will automatically join a personal room based on their `userId` for direct targeting.
 
 ### Event Definitions
