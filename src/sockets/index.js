@@ -11,10 +11,18 @@ const initSockets = (server) => {
 
     // Authentication Middleware
     io.use((socket, next) => {
-        const token = socket.handshake.auth.token || socket.handshake.headers.token;
+        let token = socket.handshake.auth.token || socket.handshake.headers.authorization || socket.handshake.headers.token;
+        console.log("RECEIVED TOKEN:", token); console.log("=== TOKEN RECEIVED ===", token);
+
         if (!token) {
             return next(new Error("Authentication error: Token not provided"));
         }
+
+        if (!token.startsWith("Bearer ")) {
+            return next(new Error("Authentication error: Token must start with Bearer"));
+        }
+
+        token = token.split(" ")[1];
 
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
             if (err) return next(new Error("Authentication error: Invalid token"));
