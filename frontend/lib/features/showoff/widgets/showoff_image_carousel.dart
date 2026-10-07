@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../core/widgets/image_preview_screen.dart';
 
 class ShowOffImageCarousel extends StatefulWidget {
   final List<String> images;
@@ -31,21 +32,37 @@ class _ShowOffImageCarouselState extends State<ShowOffImageCarousel> {
           PageView.builder(
             itemCount: count,
             onPageChanged: (i) => setState(() => _current = i),
-            itemBuilder: (_, i) => CachedNetworkImage(
-              imageUrl: widget.images[i],
-              fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 300),
-              placeholder: (_, __) => Shimmer.fromColors(
-                baseColor: const Color(0xFFE0E0E0),
-                highlightColor: const Color(0xFFF5F5F5),
-                child: Container(color: Colors.white),
-              ),
-              errorWidget: (_, __, ___) => Container(
-                color: Colors.grey.shade200,
-                child: const Icon(
-                  Icons.broken_image_rounded,
-                  size: 48,
-                  color: Colors.grey,
+            itemBuilder: (_, i) => GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ImagePreviewScreen(
+                      images: widget.images,
+                      initialIndex: i,
+                    ),
+                  ),
+                );
+              },
+              child: Hero(
+                tag: 'imagePreview_${widget.images[i]}',
+                child: CachedNetworkImage(
+                  imageUrl: widget.images[i],
+                  fit: BoxFit.cover,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  placeholder: (_, __) => Shimmer.fromColors(
+                    baseColor: const Color(0xFFE0E0E0),
+                    highlightColor: const Color(0xFFF5F5F5),
+                    child: Container(color: Colors.white),
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    color: Colors.grey.shade200,
+                    child: const Icon(
+                      Icons.broken_image_rounded,
+                      size: 48,
+                      color: Colors.grey,
+                    ),
+                  ),
                 ),
               ),
             ),

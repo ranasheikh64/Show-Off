@@ -11,6 +11,7 @@ class CustomButton extends StatelessWidget {
   final double? height;
   final Color? color;
   final Gradient? gradient;
+  final double? borderRadius;
 
   const CustomButton({
     super.key,
@@ -22,6 +23,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.color,
     this.gradient,
+    this.borderRadius,
   });
 
   @override
@@ -34,14 +36,14 @@ class CustomButton extends StatelessWidget {
               onPressed: isLoading ? null : onPressed,
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: color ?? AppTheme.primaryBlue, width: 2),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 12.r)),
               ),
               child: _buildChild(color ?? AppTheme.primaryBlue),
             )
           : Container(
               decoration: BoxDecoration(
                 gradient: gradient ?? LinearGradient(colors: [color ?? AppTheme.primaryBlue, color ?? AppTheme.primaryBlue]),
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(borderRadius ?? 12.r),
                 boxShadow: gradient != null ? [
                   BoxShadow(
                     color: gradient!.colors.last.withValues(alpha: 0.3),
@@ -55,7 +57,7 @@ class CustomButton extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 12.r)),
                   elevation: 0,
                 ),
                 child: _buildChild(Colors.white),

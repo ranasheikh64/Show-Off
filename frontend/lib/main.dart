@@ -15,8 +15,9 @@ void main() async {
   await HiveService.init();
 
   // Initialize Global Controllers
-  Get.put(AuthController(), permanent: true);
-  Get.put(ChatController(), permanent: true);
+  Get.put(AuthController(), permanent: true); // AuthController manages global state
+  Get.lazyPut(() => ChatController(), fenix: true);
+  // Add other controllers here if needed with fenix: true so they re-initialize after logout
 
   runApp(const MyApp());
 }

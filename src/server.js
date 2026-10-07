@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 })
 
 // Database connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, { family: 4 })
     .then(() => console.log('Connected to MongoDB successfully.'))
     .catch((err) => console.error('MongoDB connection error:', err));
 

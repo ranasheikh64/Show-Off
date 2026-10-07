@@ -26,6 +26,7 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
   final ValueNotifier<bool> _fabVisible = ValueNotifier(true);
   bool _showMyPosts = false;
   bool _paginationLocked = false; // throttle pagination
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -74,9 +75,9 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
     final newlyChosen = await _showOffCtrl.chooseUser(targetUserId);
     if (!mounted) return;
     if (newlyChosen == null) {
-      return _toast('Could not choose this user. Please try again.');
+      return _toast('Could not send love. Please try again.');
     }
-    if (!newlyChosen) return _toast('You have already chosen this person ✅');
+    if (!newlyChosen) return _toast('You have already shown love to this person ✅');
 
     SocketService.emitWithAck('access_chat', {'userId': targetUserId}, (res) {
       if (!mounted) return;
@@ -84,14 +85,11 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
       if (success) {
         Get.find<ChatController>().sendMessage(
           res['chat']['_id'],
-          'I have chosen you from Show Off! ❤️',
+          'Sending love from Show Off! ❤️',
         );
+      } else {
+        _toast('Loved, but the message could not be sent.');
       }
-      _toast(
-        success
-            ? 'You have chosen them! A message has been sent. ❤️'
-            : 'Chosen, but the message could not be sent.',
-      );
     });
   }
 
@@ -136,6 +134,12 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
       _showOffCtrl.fetchMyPosts(refresh: true);
   }
 
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+    });
+  }
+
   Future<void> _refresh() => _showMyPosts
       ? _showOffCtrl.fetchMyPosts(refresh: true)
       : _showOffCtrl.fetchFeed(refresh: true);
@@ -146,7 +150,11 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ShowOffHeader(showMyPosts: _showMyPosts, onChanged: _onToggle),
+            ShowOffHeader(
+              showMyPosts: _showMyPosts,
+              onChanged: _onToggle,
+              onSearch: _onSearchChanged,
+            ),
             Expanded(
               child: NotificationListener<ScrollNotification>(
                 onNotification: _onScrollNotification,
@@ -174,7 +182,16 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
   }
 
   Widget _buildBody() {
-    final posts = _showMyPosts ? _showOffCtrl.myPosts : _showOffCtrl.feedPosts;
+    var posts = _showMyPosts ? _showOffCtrl.myPosts : _showOffCtrl.feedPosts;
+    
+    if (_searchQuery.isNotEmpty) {
+      posts = posts.where((p) {
+        final name = p.user?.name.toLowerCase() ?? '';
+        final username = p.user?.username.toLowerCase() ?? '';
+        return name.contains(_searchQuery) || username.contains(_searchQuery);
+      }).toList().obs;
+    }
+
     final loading = _showMyPosts
         ? _showOffCtrl.isLoadingMyPosts.value
         : _showOffCtrl.isLoadingFeed.value;

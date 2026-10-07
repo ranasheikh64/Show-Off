@@ -1,11 +1,11 @@
 class ApiUrl {
   // Adjust base url according to physical device or emulator
-  static const String baseUrl =
-      'https://jr-connection.onrender.com/api'; // Live Render API
-  static const String socketUrl = 'https://jr-connection.onrender.com';
+  // static const String baseUrl =
+  //     'https://jr-connection.onrender.com/api'; // Live Render API
+  // static const String socketUrl = 'https://jr-connection.onrender.com';
 
-  // static const String baseUrl = 'http://10.0.60.243:5000/api'; // Local IP for physical device
-  // static const String socketUrl = 'http://10.0.60.243:5000';
+  static const String baseUrl = 'http://10.0.60.243:5000/api'; // Local IP for physical device
+  static const String socketUrl = 'http://10.0.60.243:5000';
 
   // Auth endpoints
   static const String login = '$baseUrl/auth/login';

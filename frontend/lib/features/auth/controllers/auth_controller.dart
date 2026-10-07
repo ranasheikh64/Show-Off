@@ -1,10 +1,12 @@
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../../../core/storage/hive_service.dart';
 import '../models/user_model.dart';
 import 'package:dio/dio.dart';
 import '../services/auth_service.dart';
+import '../../../core/constants/api_url.dart';
+import '../../../core/network/dio_client.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -146,9 +148,52 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> updateProfile(Map<String, dynamic> data, BuildContext context, {String? imagePath}) async {
+    try {
+      isLoading.value = true;
+      
+      // If there's a new image, upload it first
+      if (imagePath != null) {
+        final formData = FormData.fromMap({
+          'file': await MultipartFile.fromFile(imagePath, filename: imagePath.split('/').last),
+        });
+        final uploadRes = await DioClient.instance.post(ApiUrl.uploadMedia, data: formData);
+        data['profileImage'] = uploadRes.data['url'];
+      }
+
+      final updatedUser = await _authService.updateProfile(data);
+      
+      currentUser.value = updatedUser;
+      await HiveService.saveUser(updatedUser.toJson());
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully'), backgroundColor: Colors.green),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (e is DioException && e.response?.data is Map) {
+        errorMessage = (e.response!.data as Map)['message'] ?? errorMessage;
+      }
+      _showError(context, errorMessage);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> logout(BuildContext context) async {
     await HiveService.clearAuth();
     currentUser.value = null;
+
+    // Reset all GetX controllers so they fetch fresh data on next login.
+    // force: true ensures they are removed from memory even if permanent.
+    Get.deleteAll(force: true);
+    
+    // Re-initialize AuthController as it's required globally
+    Get.put(AuthController(), permanent: true);
+
     if (context.mounted) {
       context.go('/login');
     }

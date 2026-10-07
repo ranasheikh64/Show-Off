@@ -73,8 +73,14 @@ class ChatModel {
       id: json['_id'] ?? '',
       isGroupChat: json['isGroupChat'] ?? false,
       chatName: json['chatName'],
-      users: (json['users'] as List?)?.map((u) => UserModel.fromJson(u)).toList() ?? [],
-      latestMessage: json['latestMessage'] != null ? MessageModel.fromJson(json['latestMessage']) : null,
+      users: (json['users'] as List?)
+              ?.where((u) => u is Map<String, dynamic>)
+              .map((u) => UserModel.fromJson(u as Map<String, dynamic>))
+              .toList() ??
+          [],
+      latestMessage: (json['latestMessage'] is Map<String, dynamic>)
+          ? MessageModel.fromJson(json['latestMessage'])
+          : null,
       mutedBy: (json['mutedBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
       pinnedBy: (json['pinnedBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
       pinnedMessages: (json['pinnedMessages'] as List?)?.map((e) => e.toString()).toList() ?? [],

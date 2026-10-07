@@ -89,7 +89,7 @@ class ShowOffPostCard extends StatelessWidget {
     children: [
       Expanded(
         child: _button(
-          post.isChosen ? 'Chosen' : 'Choose',
+          post.isChosen ? 'Loved' : 'Show Love',
           post.isChosen ? Icons.check_circle_rounded : Icons.favorite_rounded,
           onChoose,
           gradient: post.isChosen

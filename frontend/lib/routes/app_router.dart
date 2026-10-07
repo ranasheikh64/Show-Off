@@ -4,6 +4,7 @@ import '../features/auth/screens/register_screen.dart';
 import '../features/auth/screens/forget_password_screen.dart';
 import '../features/auth/screens/verify_otp_screen.dart';
 import '../features/auth/screens/reset_password_screen.dart';
+import '../features/onboarding/screens/onboarding_screen.dart';
 
 import '../features/chat/screens/chat_list_screen.dart';
 import '../features/chat/screens/chat_detail_screen.dart';
@@ -14,6 +15,7 @@ import '../features/chat/screens/create_group_screen.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import '../core/storage/hive_service.dart';
 import '../features/showoff/screens/showoff_feed_screen.dart';
+import '../features/profile/screens/profile_screen.dart';
 
 String getInitialRoute() {
   final token = HiveService.getToken();
@@ -22,12 +24,13 @@ String getInitialRoute() {
       return '/home';
     }
   }
-  return '/login';
+  return '/onboarding';
 }
 
 final GoRouter appRouter = GoRouter(
   initialLocation: getInitialRoute(),
   routes: [
+    GoRoute(path: '/onboarding', builder: (context, state) => const OnboardingScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(path: '/register', builder: (context, state) => const RegisterScreen()),
     GoRoute(path: '/forget-password', builder: (context, state) => const ForgetPasswordScreen()),
@@ -51,5 +54,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/search', builder: (context, state) => const SearchScreen()),
     GoRoute(path: '/discover', builder: (context, state) => const DiscoverScreen()),
     GoRoute(path: '/create-group', builder: (context, state) => const CreateGroupScreen()),
+    GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
   ],
 );
+

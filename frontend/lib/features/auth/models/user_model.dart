@@ -6,6 +6,10 @@ class UserModel {
   final String? profileImage;
   final String? gender;
   final int? age;
+  final String? education;
+  final String? petLover;
+  final List<String> passion;
+  final List<String> preferences;
   final bool isBlocked;
   final bool isBlockedBy;
   final bool isOnline;
@@ -19,6 +23,10 @@ class UserModel {
     this.profileImage,
     this.gender,
     this.age,
+    this.education,
+    this.petLover,
+    this.passion = const [],
+    this.preferences = const [],
     this.isBlocked = false,
     this.isBlockedBy = false,
     this.isOnline = false,
@@ -34,6 +42,10 @@ class UserModel {
       profileImage: json['profileImage'],
       gender: json['gender'],
       age: json['age'],
+      education: json['education'],
+      petLover: json['petLover'],
+      passion: json['passion'] != null ? List<String>.from(json['passion']) : [],
+      preferences: json['preferences'] != null ? List<String>.from(json['preferences']) : [],
       isBlocked: json['isBlocked'] ?? false,
       isBlockedBy: json['isBlockedBy'] ?? false,
       isOnline: json['isOnline'] ?? false,
@@ -50,6 +62,10 @@ class UserModel {
       'profileImage': profileImage,
       'gender': gender,
       'age': age,
+      'education': education,
+      'petLover': petLover,
+      'passion': passion,
+      'preferences': preferences,
       'isBlocked': isBlocked,
       'isBlockedBy': isBlockedBy,
       'isOnline': isOnline,
@@ -57,3 +73,4 @@ class UserModel {
     };
   }
 }
+

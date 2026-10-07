@@ -50,6 +50,19 @@ const userSchema = new mongoose.Schema(
             type: [String],
             default: []
         },
+        education: {
+            type: String,
+            default: null
+        },
+        petLover: {
+            type: String,
+            enum: ['Yes', 'No', 'Sometimes'],
+            default: 'No'
+        },
+        preferences: {
+            type: [String],
+            default: []
+        },
         profileImage: {
             type: String,
             default: null

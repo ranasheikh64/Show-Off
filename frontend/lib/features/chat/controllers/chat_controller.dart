@@ -280,6 +280,10 @@ class ChatController extends GetxController {
         0,
         chat.copyWith(latestMessage: msg, unreadCount: newUnreadCount),
       );
+      chats.refresh(); // Ensure the UI updates
+    } else {
+      // If the chat is new and not in the list yet, fetch the chats again.
+      fetchChats();
     }
   }
 
@@ -302,6 +306,8 @@ class ChatController extends GetxController {
       );
       
       final fetchedChats = result['chats'] as List<ChatModel>;
+      print("fetchChats returned ${fetchedChats.length} chats");
+      
       hasMoreChats.value = result['hasMore'];
 
       if (loadMore) {
@@ -323,7 +329,12 @@ class ChatController extends GetxController {
         SocketService.joinChat(chat.id);
       }
     } catch (e) {
-      print(e);
+      print("Error in fetchChats: $e");
+      if (!loadMore) {
+        MyApp.scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(content: Text('Failed to load chats: $e')),
+        );
+      }
     } finally {
       if (loadMore) {
         isFetchingMoreChats.value = false;

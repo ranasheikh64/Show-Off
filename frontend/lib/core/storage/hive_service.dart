@@ -34,8 +34,10 @@ class HiveService {
   }
 
   static Future<void> clearAuth() async {
-    final box = Hive.box(authBox);
-    await box.clear();
+    final auth = Hive.box(authBox);
+    await auth.clear();
+    final msgs = Hive.box(messagesBox);
+    await msgs.clear();
   }
 
   static Map<String, dynamic> _deepCastMap(Map<dynamic, dynamic> map) {

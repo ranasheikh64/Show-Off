@@ -89,12 +89,16 @@ class MessageModel {
 
     return MessageModel(
       id: json['_id'] ?? '',
-      sender: json['sender'] != null ? UserModel.fromJson(json['sender']) : null,
+      sender: (json['sender'] is Map<String, dynamic>) 
+          ? UserModel.fromJson(json['sender']) 
+          : null,
       content: decryptedContent,
       readBy: List<String>.from(json['readBy']?.map((x) => x is Map ? (x['_id'] ?? '') : x.toString()) ?? []),
       deliveredTo: List<String>.from(json['deliveredTo']?.map((x) => x is Map ? (x['_id'] ?? '') : x.toString()) ?? []),
       isDeletedForEveryone: isDeleted,
-      replyTo: (json['replyTo'] is Map<String, dynamic>) ? MessageModel.fromJson(json['replyTo']) : null,
+      replyTo: (json['replyTo'] is Map<String, dynamic>) 
+          ? MessageModel.fromJson(json['replyTo']) 
+          : null,
       reactions: json['reactions'] ?? [],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       expiresAt: json['expiresAt'] != null ? DateTime.parse(json['expiresAt']) : null,
