@@ -100,53 +100,93 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   }
 
   void _startRecording() async {
-    final status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
+    if (_isRecording) return;
+    try {
+      final status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Microphone access is required", style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      if (await _audioRecorder.hasPermission()) {
+        final dir = await getApplicationDocumentsDirectory();
+        _recordFilePath = '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        await _audioRecorder.start(const RecordConfig(), path: _recordFilePath!);
+        
+        _recordTimer?.cancel();
+        setState(() {
+          _isRecording = true;
+          _isRecordingCompleted = false;
+          _recordSeconds = 0;
+          _playbackPosition = 0;
+        });
+        _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          setState(() {
+            _recordSeconds++;
+          });
+        });
+      }
+    } catch (e) {
+      print("Error starting recording: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Microphone access is required to record audio")),
+          const SnackBar(
+            content: Text("Failed to start recording", style: TextStyle(color: Colors.white)),
+            backgroundColor: Colors.red,
+          ),
         );
       }
-      return;
-    }
-
-    if (await _audioRecorder.hasPermission()) {
-      final dir = await getApplicationDocumentsDirectory();
-      _recordFilePath = '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
-      await _audioRecorder.start(const RecordConfig(), path: _recordFilePath!);
-      setState(() {
-        _isRecording = true;
-        _isRecordingCompleted = false;
-        _recordSeconds = 0;
-        _playbackPosition = 0;
-      });
-      _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        setState(() {
-          _recordSeconds++;
-        });
-      });
+      _deleteRecording();
     }
   }
 
   void _stopRecording(bool sendImmediately) async {
-    final path = await _audioRecorder.stop();
-    _recordTimer?.cancel();
-
-    if (_recordSeconds < 1) {
-      // Discard recording if it's less than 1 second
-      _deleteRecording();
-      return;
-    }
-
-    setState(() {
-      _isRecording = false;
-      if (path != null) {
-        _recordFilePath = path;
-        _isRecordingCompleted = true;
+    try {
+      final path = await _audioRecorder.stop();
+      _recordTimer?.cancel();
+      
+      if (mounted) {
+        setState(() {
+          _isRecording = false;
+        });
       }
-    });
-    if (sendImmediately && path != null) {
-      _sendAudio();
+
+      if (_recordSeconds < 1) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Recording too short", style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
+        _deleteRecording();
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          if (path != null) {
+            _recordFilePath = path;
+            _isRecordingCompleted = true;
+          }
+        });
+      }
+      
+      if (sendImmediately && path != null) {
+        _sendAudio();
+      }
+    } catch (e) {
+      print("Error stopping recording: $e");
+      _deleteRecording();
     }
   }
 
@@ -157,14 +197,27 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     }
   }
 
-  void _deleteRecording() {
-    _audioPlayer.stop();
-    setState(() {
-      _isRecordingCompleted = false;
-      _recordFilePath = null;
-      _recordSeconds = 0;
-      _playbackPosition = 0;
-    });
+  void _deleteRecording() async {
+    try {
+      _audioPlayer.stop();
+      _recordTimer?.cancel();
+      
+      if (_isRecording) {
+        await _audioRecorder.stop();
+      }
+    } catch (e) {
+      print("Error deleting recording: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isRecording = false;
+          _isRecordingCompleted = false;
+          _recordFilePath = null;
+          _recordSeconds = 0;
+          _playbackPosition = 0;
+        });
+      }
+    }
   }
 
   void _onEmojiSelected(Category? category, Emoji emoji) {
@@ -347,17 +400,17 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                 Padding(
                   padding: EdgeInsets.only(bottom: 2.h),
                   child: GestureDetector(
-                    onPanDown: (_) {
+                    onLongPressStart: (_) {
                       if (!_isTyping && !_isRecordingCompleted) {
                         _startRecording();
                       }
                     },
-                    onPanEnd: (_) {
+                    onLongPressEnd: (_) {
                       if (_isRecording) {
                         _stopRecording(false);
                       }
                     },
-                    onPanCancel: () {
+                    onLongPressCancel: () {
                       if (_isRecording) {
                         _stopRecording(false);
                       }
@@ -370,7 +423,11 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                       } else {
                         // Quick tap on mic without holding
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Hold to record audio.")),
+                          const SnackBar(
+                            content: Text("Hold to record audio.", style: TextStyle(color: Colors.white)),
+                            backgroundColor: Colors.orange,
+                            duration: Duration(seconds: 1),
+                          ),
                         );
                       }
                     },

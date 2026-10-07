@@ -36,7 +36,15 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Forget Password', style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold)),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue],
+                ).createShader(bounds),
+                child: Text(
+                  'Forget Password',
+                  style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.w800, color: Colors.white),
+                ),
+              ),
               SizedBox(height: 8.h),
               Text('Enter email to receive OTP', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16.sp)),
               SizedBox(height: 32.h),
@@ -50,6 +58,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               SizedBox(height: 32.h),
               Obx(() => CustomButton(
                 text: 'Send OTP',
+                gradient: const LinearGradient(colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue]),
                 isLoading: _authCtrl.isLoading.value,
                 onPressed: _onSubmit,
               )),

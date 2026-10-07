@@ -45,7 +45,7 @@ const saveMessage = async (chatId, senderId, content, replyTo = null, duration =
         });
 };
 
-const fetchMessages = async (chatId, userId, page = 1, limit = 20) => {
+const fetchMessages = async (chatId, userId, page = 1, limit = 20, searchQuery = "") => {
     const chat = await Chat.findById(chatId);
     let clearedAt = new Date(0);
     if (chat) {
@@ -55,13 +55,23 @@ const fetchMessages = async (chatId, userId, page = 1, limit = 20) => {
 
     const skip = (page - 1) * limit;
 
-    const messages = await Message.find({ 
+    const query = {
         chat: chatId,
         createdAt: { $gt: clearedAt },
         deletedFor: { $ne: userId }
-    })
+    };
+
+    if (searchQuery && searchQuery.trim() !== "") {
+        // Simple regex search (case-insensitive) on the encrypted content
+        // Note: If content is encrypted, exact match or server-side decryption is needed.
+        // Assuming search is supported or content is partially searchable:
+        query.content = { $regex: searchQuery, $options: "i" };
+    }
+
+    const messages = await Message.find(query)
         .populate('sender', 'name username email')
         .populate('readBy', 'name username email')
+        .populate('deliveredTo', 'name username email')
         .populate({
             path: 'replyTo',
             populate: { path: 'sender', select: 'name username email' }
@@ -85,6 +95,26 @@ const markAsRead = async (messageId, userId) => {
     return await Message.findById(messageId)
         .populate('sender', 'name username email')
         .populate('readBy', 'name username email')
+        .populate('deliveredTo', 'name username email')
+        .populate({
+            path: 'replyTo',
+            populate: { path: 'sender', select: 'name username email' }
+        });
+};
+
+const markAsDelivered = async (messageId, userId) => {
+    const message = await Message.findById(messageId);
+    if (!message) return null;
+
+    if (!message.deliveredTo.includes(userId)) {
+        message.deliveredTo.push(userId);
+        await message.save();
+    }
+    
+    return await Message.findById(messageId)
+        .populate('sender', 'name username email')
+        .populate('readBy', 'name username email')
+        .populate('deliveredTo', 'name username email')
         .populate({
             path: 'replyTo',
             populate: { path: 'sender', select: 'name username email' }
@@ -144,6 +174,7 @@ module.exports = {
     saveMessage,
     fetchMessages,
     markAsRead,
+    markAsDelivered,
     reactToMessage,
     deleteMessage
 };

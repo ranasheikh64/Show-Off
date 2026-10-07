@@ -11,6 +11,8 @@ class ChatModel {
   final List<String> pinnedBy;
   final List<String> pinnedMessages;
   final bool isLocked;
+  final bool isPinned;
+  final int pinOrder;
   int disappearingTimer;
   String? disappearingTimerSetBy;
   int unreadCount;
@@ -25,6 +27,8 @@ class ChatModel {
     this.pinnedBy = const [],
     this.pinnedMessages = const [],
     this.isLocked = false,
+    this.isPinned = false,
+    this.pinOrder = 999999,
     this.disappearingTimer = 0,
     this.disappearingTimerSetBy,
     this.unreadCount = 0,
@@ -40,6 +44,8 @@ class ChatModel {
     List<String>? pinnedBy,
     List<String>? pinnedMessages,
     bool? isLocked,
+    bool? isPinned,
+    int? pinOrder,
     int? disappearingTimer,
     String? disappearingTimerSetBy,
     int? unreadCount,
@@ -54,6 +60,8 @@ class ChatModel {
       pinnedBy: pinnedBy ?? this.pinnedBy,
       pinnedMessages: pinnedMessages ?? this.pinnedMessages,
       isLocked: isLocked ?? this.isLocked,
+      isPinned: isPinned ?? this.isPinned,
+      pinOrder: pinOrder ?? this.pinOrder,
       disappearingTimer: disappearingTimer ?? this.disappearingTimer,
       disappearingTimerSetBy: disappearingTimerSetBy ?? this.disappearingTimerSetBy,
       unreadCount: unreadCount ?? this.unreadCount,
@@ -67,10 +75,12 @@ class ChatModel {
       chatName: json['chatName'],
       users: (json['users'] as List?)?.map((u) => UserModel.fromJson(u)).toList() ?? [],
       latestMessage: json['latestMessage'] != null ? MessageModel.fromJson(json['latestMessage']) : null,
-      mutedBy: List<String>.from(json['mutedBy'] ?? []),
-      pinnedBy: List<String>.from(json['pinnedBy'] ?? []),
-      pinnedMessages: List<String>.from(json['pinnedMessages'] ?? []),
+      mutedBy: (json['mutedBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      pinnedBy: (json['pinnedBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      pinnedMessages: (json['pinnedMessages'] as List?)?.map((e) => e.toString()).toList() ?? [],
       isLocked: json['isLocked'] ?? false,
+      isPinned: json['isPinned'] ?? false,
+      pinOrder: json['pinOrder'] ?? 999999,
       disappearingTimer: json['disappearingTimer'] ?? 0,
       disappearingTimerSetBy: json['disappearingTimerSetBy'],
       unreadCount: json['unreadCount'] ?? 0,

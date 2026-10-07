@@ -8,6 +8,8 @@ class UserModel {
   final int? age;
   final bool isBlocked;
   final bool isBlockedBy;
+  final bool isOnline;
+  final DateTime? lastActive;
 
   UserModel({
     required this.id,
@@ -19,6 +21,8 @@ class UserModel {
     this.age,
     this.isBlocked = false,
     this.isBlockedBy = false,
+    this.isOnline = false,
+    this.lastActive,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class UserModel {
       age: json['age'],
       isBlocked: json['isBlocked'] ?? false,
       isBlockedBy: json['isBlockedBy'] ?? false,
+      isOnline: json['isOnline'] ?? false,
+      lastActive: json['lastActive'] != null ? DateTime.parse(json['lastActive']) : null,
     );
   }
 
@@ -46,6 +52,8 @@ class UserModel {
       'age': age,
       'isBlocked': isBlocked,
       'isBlockedBy': isBlockedBy,
+      'isOnline': isOnline,
+      'lastActive': lastActive?.toIso8601String(),
     };
   }
 }

@@ -117,12 +117,17 @@ const setDisappearingTimer = async (chatId, seconds, userId) => {
     return chat;
 };
 
-function formatChatsForUser(chats, currentUserId) {
+function formatChatsForUser(chats, currentUserId, userPinnedChats = []) {
     return chats.map(chat => {
         let chatObj = chat.toObject ? chat.toObject() : chat;
         
         chatObj.isLocked = (chatObj.lockedBy || []).some(l => l.user.toString() === currentUserId.toString());
         delete chatObj.lockedBy; // Security: Never send password hash to frontend
+
+        // Override isPinned with order from userPinnedChats if provided
+        const pinIndex = userPinnedChats.findIndex(id => id.toString() === chatObj._id.toString());
+        chatObj.isPinned = pinIndex > -1;
+        chatObj.pinOrder = pinIndex > -1 ? pinIndex : 999999;
 
         if (chatObj.users) {
             chatObj.users = chatObj.users.map(u => {
@@ -136,20 +141,49 @@ function formatChatsForUser(chats, currentUserId) {
     });
 }
 
-const fetchUserChats = async (userId) => {
-    const chats = await Chat.find({
+const fetchUserChats = async (userId, page = 1, limit = 20, searchQuery = '') => {
+    const user = await User.findById(userId);
+    const userPinnedChats = user.pinnedChats || [];
+
+    let query = {
         users: { $elemMatch: { $eq: userId } },
-        deletedBy: { $ne: userId } // Do not fetch chats deleted by this user
-    })
+        deletedBy: { $ne: userId }
+    };
+
+    if (searchQuery) {
+        const matchingUsers = await User.find({
+            $or: [
+                { name: { $regex: searchQuery, $options: 'i' } },
+                { username: { $regex: searchQuery, $options: 'i' } }
+            ]
+        }).select('_id');
+        const matchingUserIds = matchingUsers.map(u => u._id);
+
+        query.$or = [
+            { chatName: { $regex: searchQuery, $options: 'i' } },
+            { users: { $elemMatch: { $in: matchingUserIds, $ne: userId } } } // Exclude self from matching otherwise all chats match
+        ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const chats = await Chat.find(query)
         .populate('users', '-password')
         .populate('admin', '-password')
         .populate({
             path: 'latestMessage',
             populate: { path: 'sender', select: 'name username email' }
         })
-        .sort({ updatedAt: -1 });
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit);
     
-    return formatChatsForUser(chats, userId);
+    const total = await Chat.countDocuments(query);
+    
+    return {
+        chats: formatChatsForUser(chats, userId, userPinnedChats),
+        hasMore: skip + chats.length < total
+    };
 };
 
 const muteChat = async (chatId, userId, durationInHours) => {
@@ -179,12 +213,27 @@ const unmuteChat = async (chatId, userId) => {
 };
 
 const toggleChatAction = async (chatId, userId, action) => {
+    if (action === 'pin') {
+        const user = await User.findById(userId);
+        if (!user) throw new Error("User not found");
+        const index = user.pinnedChats.findIndex(id => id.toString() === chatId.toString());
+        if (index > -1) {
+            user.pinnedChats.splice(index, 1);
+        } else {
+            user.pinnedChats.push(chatId);
+        }
+        await user.save();
+        
+        // Ensure chat model also has it for backward compatibility if needed, though we rely on user.pinnedChats now
+        const chat = await Chat.findById(chatId);
+        return formatChatsForUser([chat], userId, user.pinnedChats)[0];
+    }
+
     const chat = await Chat.findById(chatId);
     if (!chat) throw new Error("Chat not found");
 
     let arrayToUpdate;
-    if (action === 'pin') arrayToUpdate = chat.pinnedBy;
-    else if (action === 'favourite') arrayToUpdate = chat.favouritedBy;
+    if (action === 'favourite') arrayToUpdate = chat.favouritedBy;
     else if (action === 'archive') arrayToUpdate = chat.archivedBy;
     else throw new Error("Invalid action. Must be 'pin', 'favourite', or 'archive'");
 
@@ -198,7 +247,16 @@ const toggleChatAction = async (chatId, userId, action) => {
     }
 
     await chat.save();
-    return chat;
+    const user = await User.findById(userId);
+    return formatChatsForUser([chat], userId, user.pinnedChats || [])[0];
+};
+
+const reorderPinnedChats = async (userId, chatIds) => {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+    user.pinnedChats = chatIds;
+    await user.save();
+    return true;
 };
 
 const deleteChatForUser = async (chatId, userId) => {
@@ -264,6 +322,7 @@ module.exports = {
     muteChat,
     unmuteChat,
     toggleChatAction,
+    reorderPinnedChats,
     deleteChatForUser,
     clearChatHistoryForUser,
     togglePinMessage

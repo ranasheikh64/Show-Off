@@ -45,7 +45,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Create Account', style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold)),
+              SizedBox(height: 20.h),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue],
+                ).createShader(bounds),
+                child: Text(
+                  'Create Account',
+                  style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.w800, color: Colors.white),
+                ),
+              ),
               SizedBox(height: 8.h),
               Text('Sign up to get started', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16.sp)),
               SizedBox(height: 32.h),
@@ -81,6 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 32.h),
               Obx(() => CustomButton(
                 text: 'Register',
+                gradient: const LinearGradient(colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue]),
                 isLoading: _authCtrl.isLoading.value,
                 onPressed: _onRegister,
               )),

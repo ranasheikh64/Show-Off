@@ -5,8 +5,11 @@ const { protect } = require('../middlewares/auth.middleware');
 
 router.get('/', protect, async (req, res) => {
     try {
-        const chats = await chatService.fetchUserChats(req.user.id);
-        res.json(chats);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const searchQuery = req.query.searchQuery || '';
+        const result = await chatService.fetchUserChats(req.user.id, page, limit, searchQuery);
+        res.json({ chats: result.chats, hasMore: result.hasMore });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

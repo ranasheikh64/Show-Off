@@ -11,12 +11,23 @@ import '../features/chat/screens/search_screen.dart';
 import '../features/chat/screens/discover_screen.dart';
 import '../features/chat/screens/create_group_screen.dart';
 
-import '../features/auth/screens/splash_screen.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import '../core/storage/hive_service.dart';
+import '../features/showoff/screens/showoff_feed_screen.dart';
+
+String getInitialRoute() {
+  final token = HiveService.getToken();
+  if (token != null && token.isNotEmpty) {
+    if (!JwtDecoder.isExpired(token)) {
+      return '/home';
+    }
+  }
+  return '/login';
+}
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: getInitialRoute(),
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(path: '/register', builder: (context, state) => const RegisterScreen()),
     GoRoute(path: '/forget-password', builder: (context, state) => const ForgetPasswordScreen()),
@@ -28,7 +39,8 @@ final GoRouter appRouter = GoRouter(
       path: '/reset-password',
       builder: (context, state) => ResetPasswordScreen(email: state.extra as String? ?? ''),
     ),
-    GoRoute(path: '/home', builder: (context, state) => const ChatListScreen()),
+    GoRoute(path: '/home', builder: (context, state) => const ShowOffFeedScreen()),
+    GoRoute(path: '/chat-list', builder: (context, state) => const ChatListScreen()),
     GoRoute(
       path: '/chat/:id',
       builder: (context, state) => ChatDetailScreen(

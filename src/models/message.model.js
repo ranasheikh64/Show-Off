@@ -13,6 +13,7 @@ const messageSchema = new mongoose.Schema({
         }
     ],
     readBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    deliveredTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     isDeletedForEveryone: { type: Boolean, default: false },
     deletedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     expiresAt: { type: Date, default: null }, // MongoDB will use this for TTL

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +19,7 @@ import '../models/message_model.dart';
 import 'package:intl/intl.dart';
 
 import 'countdown_widget.dart';
+import 'full_screen_image_viewer.dart';
 
 class MessageBubbleWidget extends StatelessWidget {
   final MessageModel message;
@@ -199,16 +202,13 @@ class MessageBubbleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = message.content;
-    final isMedia =
-        content.startsWith('http') &&
+    final isMedia = content.startsWith('[IMAGE]') || (content.startsWith('http') &&
         (content.endsWith('.jpg') ||
             content.endsWith('.png') ||
             content.endsWith('.jpeg') ||
-            content.endsWith('.gif'));
+            content.endsWith('.gif')));
 
-    bool isSeen =
-        message.readBy.length >
-        1; // Simplification: length > 1 means someone else read it
+// Simplification: length > 1 means someone else read it
 
     if (message.isSystemMessage) {
       String displayMsg = message.content;
@@ -226,12 +226,15 @@ class MessageBubbleWidget extends StatelessWidget {
         final secString = message.content.split('_').last;
         final sec = int.tryParse(secString) ?? 0;
 
+        // ignore: unnecessary_brace_in_string_interps
         String timeStr = '${sec} seconds';
-        if (sec >= 86400)
+        if (sec >= 86400) {
           timeStr = '${sec ~/ 86400} days';
-        else if (sec >= 3600)
+        } else if (sec >= 3600)
+          // ignore: curly_braces_in_flow_control_structures
           timeStr = '${sec ~/ 3600} hours';
         else if (sec >= 60)
+          // ignore: curly_braces_in_flow_control_structures
           timeStr = '${sec ~/ 60} minutes';
 
         mainText =
@@ -290,17 +293,21 @@ class MessageBubbleWidget extends StatelessWidget {
 
     String contentx = message.content;
     bool isExplicitAudio = false;
+    bool isExplicitImage = false;
     if (content.startsWith('[AUDIO]')) {
       isExplicitAudio = true;
       contentx = content.substring(7); // Remove [AUDIO]
+    } else if (content.startsWith('[IMAGE]')) {
+      isExplicitImage = true;
+      contentx = content.substring(7); // Remove [IMAGE]
     }
 
-    final isMediax =
+    final isMediax = isExplicitImage || (
         contentx.startsWith('http') &&
         (contentx.endsWith('.jpg') ||
             contentx.endsWith('.png') ||
             contentx.endsWith('.jpeg') ||
-            contentx.endsWith('.gif'));
+            contentx.endsWith('.gif')));
 
     bool isAudio =
         isExplicitAudio ||
@@ -324,13 +331,29 @@ class MessageBubbleWidget extends StatelessWidget {
       contentWidget = Stack(
         alignment: Alignment.center,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.r),
-            child: Image.file(
-              File(content),
-              width: 200.w,
-              height: 200.h,
-              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FullScreenImageViewer(
+                    imageUrl: contentx,
+                    isLocalFile: true,
+                  ),
+                ),
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.r),
+              child: Hero(
+                tag: contentx,
+                child: Image.file(
+                  File(contentx),
+                  width: 200.w,
+                  height: 200.h,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
           if (message.isUploading)
@@ -359,8 +382,8 @@ class MessageBubbleWidget extends StatelessWidget {
       );
     } else if (isMediax) {
       bool isVideo =
-          content.toLowerCase().endsWith('.mp4') ||
-          content.toLowerCase().endsWith('.mov');
+          contentx.toLowerCase().endsWith('.mp4') ||
+          contentx.toLowerCase().endsWith('.mov');
       if (isVideo) {
         contentWidget = Stack(
           alignment: Alignment.center,
@@ -410,13 +433,29 @@ class MessageBubbleWidget extends StatelessWidget {
           ],
         );
       } else {
-        contentWidget = ClipRRect(
-          borderRadius: BorderRadius.circular(8.r),
-          child: Image.network(
-            content,
-            width: 200.w,
-            height: 200.h,
-            fit: BoxFit.cover,
+        contentWidget = GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => FullScreenImageViewer(
+                  imageUrl: contentx,
+                  isLocalFile: false,
+                ),
+              ),
+            );
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.r),
+            child: Hero(
+              tag: contentx,
+              child: Image.network(
+                contentx,
+                width: 200.w,
+                height: 200.h,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         );
       }
@@ -556,17 +595,23 @@ class MessageBubbleWidget extends StatelessWidget {
                       size: 14.sp,
                       color: isOnlyEmojiMsg ? Colors.grey : Colors.white70,
                     )
-                  else if (isSeen)
+                  else if (message.readBy.isNotEmpty)
                     Icon(
                       Icons.done_all,
                       size: 16.sp,
-                      color: isOnlyEmojiMsg ? Colors.blue : Colors.white70,
+                      color: isOnlyEmojiMsg ? Colors.green : Colors.greenAccent,
+                    )
+                  else if (message.deliveredTo.isNotEmpty)
+                    Icon(
+                      Icons.done_all,
+                      size: 16.sp,
+                      color: isOnlyEmojiMsg ? Colors.grey : Colors.white54,
                     )
                   else
                     Icon(
                       Icons.done,
                       size: 16.sp,
-                      color: isOnlyEmojiMsg ? Colors.grey : Colors.white70,
+                      color: isOnlyEmojiMsg ? Colors.grey : Colors.white54,
                     ),
                 ],
               ],

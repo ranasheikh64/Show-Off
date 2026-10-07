@@ -18,4 +18,10 @@ class ApiUrl {
   // Chat endpoints
   static const String fetchChats = '$baseUrl/chats';
   static const String uploadMedia = '$baseUrl/upload';
+
+  // Show off endpoints
+  static const String showOff = '$baseUrl/showoff';
+  static const String showOffFeed = '$baseUrl/showoff/feed';
+  static const String showOffChoose = '$baseUrl/showoff/choose';
+  static String showOffById(String id) => '$baseUrl/showoff/$id';
 }

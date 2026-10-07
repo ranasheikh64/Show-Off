@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const userRoutes = require('./routes/user.routes');
 const chatRoutes = require('./routes/chat.routes');
+const showOffRoutes = require('./routes/showoff.routes');
 
 const http = require('http');
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/api/showoff', showOffRoutes);
 app.get("/", (req, res) => {
     res.send("Backend server is running");
 })

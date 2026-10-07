@@ -6,6 +6,7 @@ class MessageModel {
   final UserModel? sender;
   final String content;
   final List<String> readBy;
+  final List<String> deliveredTo;
   final bool isDeletedForEveryone;
 
   final MessageModel? replyTo;
@@ -24,6 +25,7 @@ class MessageModel {
     this.sender,
     required this.content,
     this.readBy = const [],
+    this.deliveredTo = const [],
     this.isDeletedForEveryone = false,
     this.replyTo,
     this.reactions = const [],
@@ -41,6 +43,7 @@ class MessageModel {
     UserModel? sender,
     String? content,
     List<String>? readBy,
+    List<String>? deliveredTo,
     bool? isDeletedForEveryone,
     MessageModel? replyTo,
     List<dynamic>? reactions,
@@ -57,6 +60,7 @@ class MessageModel {
       sender: sender ?? this.sender,
       content: content ?? this.content,
       readBy: readBy ?? this.readBy,
+      deliveredTo: deliveredTo ?? this.deliveredTo,
       isDeletedForEveryone: isDeletedForEveryone ?? this.isDeletedForEveryone,
       replyTo: replyTo ?? this.replyTo,
       reactions: reactions ?? this.reactions,
@@ -87,7 +91,8 @@ class MessageModel {
       id: json['_id'] ?? '',
       sender: json['sender'] != null ? UserModel.fromJson(json['sender']) : null,
       content: decryptedContent,
-      readBy: List<String>.from(json['readBy'] ?? []),
+      readBy: List<String>.from(json['readBy']?.map((x) => x is Map ? (x['_id'] ?? '') : x.toString()) ?? []),
+      deliveredTo: List<String>.from(json['deliveredTo']?.map((x) => x is Map ? (x['_id'] ?? '') : x.toString()) ?? []),
       isDeletedForEveryone: isDeleted,
       replyTo: (json['replyTo'] is Map<String, dynamic>) ? MessageModel.fromJson(json['replyTo']) : null,
       reactions: json['reactions'] ?? [],

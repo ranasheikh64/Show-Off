@@ -60,6 +60,20 @@ module.exports = (io, socket) => {
         }
     });
 
+    socket.on("mark_as_delivered", async (data, callback) => {
+        try {
+            const { messageId, chatId } = data;
+            const updatedMessage = await messageService.markAsDelivered(messageId, socket.user.id);
+            
+            if (updatedMessage) {
+                io.to(chatId).emit("message_delivered", updatedMessage);
+            }
+            if (callback) callback({ success: true });
+        } catch (error) {
+            if (callback) callback({ success: false, message: error.message });
+        }
+    });
+
     socket.on("react_to_message", async (data, callback) => {
         try {
             const { messageId, chatId, emoji } = data;

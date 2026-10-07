@@ -31,8 +31,14 @@ const initSockets = (server) => {
         });
     });
 
-    io.on("connection", (socket) => {
+const User = require('../models/user.model');
+
+    io.on("connection", async (socket) => {
         console.log(`User connected: ${socket.user.id}`);
+
+        // Update user online status
+        await User.findByIdAndUpdate(socket.user.id, { isOnline: true });
+        io.emit("user_status_changed", { userId: socket.user.id, isOnline: true });
 
         // Join personal room to receive personal events (like new group added)
         socket.join(socket.user.id);
@@ -50,8 +56,10 @@ const initSockets = (server) => {
         registerChatHandlers(io, socket);
         registerMessageHandlers(io, socket);
 
-        socket.on("disconnect", () => {
+        socket.on("disconnect", async () => {
             console.log(`User disconnected: ${socket.user.id}`);
+            await User.findByIdAndUpdate(socket.user.id, { isOnline: false, lastActive: new Date() });
+            io.emit("user_status_changed", { userId: socket.user.id, isOnline: false, lastActive: new Date().toISOString() });
         });
     });
 };

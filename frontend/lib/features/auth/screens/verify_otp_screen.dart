@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_theme.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
@@ -38,7 +37,15 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Verify OTP', style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold)),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue],
+                ).createShader(bounds),
+                child: Text(
+                  'Verify OTP',
+                  style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.w800, color: Colors.white),
+                ),
+              ),
               SizedBox(height: 8.h),
               Text('Enter OTP sent to ${widget.email}', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16.sp)),
               SizedBox(height: 32.h),
@@ -52,6 +59,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               SizedBox(height: 32.h),
               Obx(() => CustomButton(
                 text: 'Verify',
+                gradient: const LinearGradient(colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue]),
                 isLoading: _authCtrl.isLoading.value,
                 onPressed: _onVerify,
               )),

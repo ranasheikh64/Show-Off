@@ -65,6 +65,18 @@ const userSchema = new mongoose.Schema(
         blockedBy: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
+        }],
+        isOnline: {
+            type: Boolean,
+            default: false
+        },
+        lastActive: {
+            type: Date,
+            default: Date.now
+        },
+        pinnedChats: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Chat'
         }]
     },
     { timestamps: true }

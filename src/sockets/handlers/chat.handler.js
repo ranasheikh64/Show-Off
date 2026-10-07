@@ -16,8 +16,11 @@ module.exports = (io, socket) => {
 
     socket.on("fetch_chats", async (data, callback) => {
         try {
-            const chats = await chatService.fetchUserChats(socket.user.id);
-            if (callback) callback({ success: true, chats });
+            const page = data?.page || 1;
+            const limit = data?.limit || 20;
+            const searchQuery = data?.searchQuery || '';
+            const result = await chatService.fetchUserChats(socket.user.id, page, limit, searchQuery);
+            if (callback) callback({ success: true, chats: result.chats, hasMore: result.hasMore });
         } catch (error) {
             if (callback) callback({ success: false, message: error.message });
         }
@@ -125,6 +128,16 @@ module.exports = (io, socket) => {
             const { chatId, action } = data; // 'pin', 'favourite', or 'archive'
             const chat = await chatService.toggleChatAction(chatId, socket.user.id, action);
             if (callback) callback({ success: true, chat });
+        } catch (error) {
+            if (callback) callback({ success: false, message: error.message });
+        }
+    });
+
+    socket.on("reorder_pinned_chats", async (data, callback) => {
+        try {
+            const { chatIds } = data; // array of chat IDs in new order
+            await chatService.reorderPinnedChats(socket.user.id, chatIds);
+            if (callback) callback({ success: true, message: "Order updated" });
         } catch (error) {
             if (callback) callback({ success: false, message: error.message });
         }

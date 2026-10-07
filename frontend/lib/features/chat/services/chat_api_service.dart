@@ -7,10 +7,27 @@ import '../../auth/models/user_model.dart';
 class ChatApiService {
   final Dio _dio = DioClient.instance;
 
-  Future<List<ChatModel>> fetchChats() async {
-    final response = await _dio.get(ApiUrl.fetchChats);
-    final List data = response.data;
-    return data.map((json) => ChatModel.fromJson(json)).toList();
+  Future<Map<String, dynamic>> fetchChats({int page = 1, int limit = 20, String searchQuery = ''}) async {
+    final response = await _dio.get(
+      ApiUrl.fetchChats,
+      queryParameters: {
+        'page': page,
+        'limit': limit,
+        if (searchQuery.isNotEmpty) 'searchQuery': searchQuery,
+      },
+    );
+    final data = response.data;
+    if (data is List) {
+      // Backward compatibility if backend isn't updated
+      return {
+        'chats': data.map((json) => ChatModel.fromJson(json)).toList(),
+        'hasMore': false,
+      };
+    }
+    return {
+      'chats': (data['chats'] as List).map((json) => ChatModel.fromJson(json)).toList(),
+      'hasMore': data['hasMore'] ?? false,
+    };
   }
 
   Future<List<UserModel>> searchUsers(String query) async {

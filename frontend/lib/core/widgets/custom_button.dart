@@ -10,6 +10,7 @@ class CustomButton extends StatelessWidget {
   final double? width;
   final double? height;
   final Color? color;
+  final Gradient? gradient;
 
   const CustomButton({
     super.key,
@@ -20,6 +21,7 @@ class CustomButton extends StatelessWidget {
     this.width,
     this.height,
     this.color,
+    this.gradient,
   });
 
   @override
@@ -36,14 +38,28 @@ class CustomButton extends StatelessWidget {
               ),
               child: _buildChild(color ?? AppTheme.primaryBlue),
             )
-          : ElevatedButton(
-              onPressed: isLoading ? null : onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color ?? AppTheme.primaryBlue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                elevation: 0,
+          : Container(
+              decoration: BoxDecoration(
+                gradient: gradient ?? LinearGradient(colors: [color ?? AppTheme.primaryBlue, color ?? AppTheme.primaryBlue]),
+                borderRadius: BorderRadius.circular(12.r),
+                boxShadow: gradient != null ? [
+                  BoxShadow(
+                    color: gradient!.colors.last.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ] : null,
               ),
-              child: _buildChild(Colors.white),
+              child: ElevatedButton(
+                onPressed: isLoading ? null : onPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                  elevation: 0,
+                ),
+                child: _buildChild(Colors.white),
+              ),
             ),
     );
   }
