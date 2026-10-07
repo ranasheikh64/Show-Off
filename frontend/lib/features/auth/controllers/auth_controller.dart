@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../../../core/storage/hive_service.dart';
 import '../models/user_model.dart';
+import 'package:dio/dio.dart';
 import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
@@ -24,9 +25,12 @@ class AuthController extends GetxController {
     }
   }
 
+  var loginError = RxnString();
+
   Future<void> login(String email, String password, BuildContext context) async {
     try {
       isLoading.value = true;
+      loginError.value = null; // Reset error on new attempt
       final res = await _authService.login(email, password);
       
       final data = res['data'];
@@ -39,15 +43,26 @@ class AuthController extends GetxController {
       
       if (context.mounted) context.go('/home'); // Replace with actual home route later
     } catch (e) {
-      _showError(context, e.toString());
+      String errorMessage = e.toString();
+      if (e is DioException && e.response?.data is Map) {
+        errorMessage = (e.response!.data as Map)['message'] ?? errorMessage;
+        if (e.response?.statusCode == 401) {
+          loginError.value = errorMessage;
+          return; // Return without showing snackbar
+        }
+      }
+      _showError(context, errorMessage);
     } finally {
       isLoading.value = false;
     }
   }
 
+  var registerEmailError = RxnString();
+
   Future<void> register(Map<String, dynamic> data, BuildContext context) async {
     try {
       isLoading.value = true;
+      registerEmailError.value = null; // Reset error on new attempt
       final res = await _authService.register(data);
       
       // Register only returns success message, no token. Redirect to login.
@@ -56,21 +71,39 @@ class AuthController extends GetxController {
         context.pop(); // Go back to login screen
       }
     } catch (e) {
-      _showError(context, e.toString());
+      if (e is DioException && e.response?.statusCode == 400) {
+        final msg = e.response?.data?['message'];
+        if (msg != null && msg.toString().toLowerCase().contains('email already exists')) {
+          registerEmailError.value = msg.toString();
+          return;
+        }
+      }
+      String errorMessage = e.toString();
+      if (e is DioException && e.response?.data is Map) {
+        errorMessage = (e.response!.data as Map)['message'] ?? errorMessage;
+      }
+      _showError(context, errorMessage);
     } finally {
       isLoading.value = false;
     }
   }
 
+  var forgetPasswordError = RxnString();
+
   Future<void> forgetPassword(String email, BuildContext context) async {
     try {
       isLoading.value = true;
+      forgetPasswordError.value = null; // Reset error on new attempt
       await _authService.forgetPassword(email);
       if (context.mounted) {
         context.push('/verify-otp', extra: email);
       }
     } catch (e) {
-      _showError(context, e.toString());
+      String errorMessage = e.toString();
+      if (e is DioException && e.response?.data is Map) {
+        errorMessage = (e.response!.data as Map)['message'] ?? errorMessage;
+      }
+      forgetPasswordError.value = errorMessage;
     } finally {
       isLoading.value = false;
     }
@@ -84,7 +117,11 @@ class AuthController extends GetxController {
         context.push('/reset-password', extra: email);
       }
     } catch (e) {
-      _showError(context, e.toString());
+      String errorMessage = e.toString();
+      if (e is DioException && e.response?.data is Map) {
+        errorMessage = (e.response!.data as Map)['message'] ?? errorMessage;
+      }
+      _showError(context, errorMessage);
     } finally {
       isLoading.value = false;
     }
@@ -99,7 +136,11 @@ class AuthController extends GetxController {
         context.go('/login');
       }
     } catch (e) {
-      _showError(context, e.toString());
+      String errorMessage = e.toString();
+      if (e is DioException && e.response?.data is Map) {
+        errorMessage = (e.response!.data as Map)['message'] ?? errorMessage;
+      }
+      _showError(context, errorMessage);
     } finally {
       isLoading.value = false;
     }

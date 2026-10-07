@@ -59,6 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 hint: 'Enter new password',
                 controller: _passCtrl,
                 isPassword: true,
+                showStrengthIndicator: true,
                 validator: (v) => v!.length < 6 ? 'Min 6 chars' : null,
               ),
               SizedBox(height: 16.h),

@@ -48,13 +48,15 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               SizedBox(height: 8.h),
               Text('Enter email to receive OTP', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16.sp)),
               SizedBox(height: 32.h),
-              CustomTextField(
+              Obx(() => CustomTextField(
                 label: 'Email',
                 hint: 'Enter your email',
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
+                errorText: _authCtrl.forgetPasswordError.value,
+                onChanged: (val) => _authCtrl.forgetPasswordError.value = null,
                 validator: (v) => v!.isEmpty ? 'Required' : null,
-              ),
+              )),
               SizedBox(height: 32.h),
               Obx(() => CustomButton(
                 text: 'Send OTP',

@@ -59,13 +59,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
                 SizedBox(height: 16.h),
-                CustomTextField(
+                Obx(() => CustomTextField(
                   label: 'Password',
                   hint: 'Enter your password',
                   controller: _passCtrl,
                   isPassword: true,
+                  errorText: _authCtrl.loginError.value,
+                  onChanged: (val) => _authCtrl.loginError.value = null,
                   validator: (v) => v!.isEmpty ? 'Required' : null,
-                ),
+                )),
                 SizedBox(height: 8.h),
                 Align(
                   alignment: Alignment.centerRight,
