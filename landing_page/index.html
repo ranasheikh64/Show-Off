@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Off - Connect, Share, Express</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="logo.png" alt="Show Off Logo" class="nav-logo">
+            <span class="nav-brand">Show Off</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#showcase">Showcase</a></li>
+            <li><a href="#security">Security</a></li>
+        </ul>
+        <button class="nav-btn">Download Now</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content fade-in-up">
+            <h1 class="gradient-text">Show your best self & find your match</h1>
+            <p>The ultimate platform to express yourself, connect with others, and chat securely with full privacy control.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary">Get Started</button>
+                <button class="btn-secondary"><i class="fa-solid fa-play"></i> Watch Demo</button>
+            </div>
+        </div>
+        <div class="hero-image-wrapper floating">
+            <img src="assets/screen1.png" alt="App Feed" class="hero-img">
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <h2 class="section-title fade-in-up">Everything you need to <span class="gradient-text">Connect</span></h2>
+        <div class="feature-grid">
+            <div class="feature-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="icon-box"><i class="fa-solid fa-camera-retro"></i></div>
+                <h3>Showoff Feed</h3>
+                <p>Scroll through a beautiful, immersive feed. Choose your favorite profiles and interact seamlessly.</p>
+            </div>
+            <div class="feature-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="icon-box"><i class="fa-solid fa-microphone-lines"></i></div>
+                <h3>Rich Media Chat</h3>
+                <p>Send voice notes, images, and emojis instantly with our real-time chat architecture.</p>
+            </div>
+            <div class="feature-card fade-in-up" style="animation-delay: 0.3s;">
+                <div class="icon-box"><i class="fa-solid fa-thumbtack"></i></div>
+                <h3>Pin & Organize</h3>
+                <p>Pin important chats to the top or pin specific messages within a conversation so you never lose track.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase Section (Screenshots) -->
+    <section id="showcase" class="showcase">
+        <div class="showcase-content fade-in-left">
+            <h2 class="gradient-text">Experience the UI</h2>
+            <p>A completely tailored, premium user interface designed for smooth interactions and perfect aesthetic appeal. Create posts, manage your chats, and interact in a beautiful environment.</p>
+            <ul class="feature-list">
+                <li><i class="fa-solid fa-check-circle"></i> Clean Login & Registration flow</li>
+                <li><i class="fa-solid fa-check-circle"></i> Intuitive Post Creation</li>
+                <li><i class="fa-solid fa-check-circle"></i> Fluid Chat Interface</li>
+            </ul>
+        </div>
+        <div class="showcase-images fade-in-right">
+            <img src="assets/screen2.png" alt="Create Post" class="sc-img img-1">
+            <img src="assets/screen3.png" alt="Chat List" class="sc-img img-2">
+            <img src="assets/screen4.png" alt="Chat Details" class="sc-img img-3">
+        </div>
+    </section>
+
+    <!-- Privacy & Security Section -->
+    <section id="security" class="security">
+        <div class="security-inner">
+            <h2 class="fade-in-up">Ultimate <span class="gradient-text">Privacy & Security</span></h2>
+            <p class="fade-in-up">You are in full control of your conversations.</p>
+            
+            <div class="sec-grid">
+                <div class="sec-item fade-in-up" style="animation-delay: 0.1s;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h4>Encrypted Messaging</h4>
+                    <p>End-to-end encryption ensures your chats remain private.</p>
+                </div>
+                <div class="sec-item fade-in-up" style="animation-delay: 0.2s;">
+                    <i class="fa-solid fa-fire"></i>
+                    <h4>Disappearing Messages</h4>
+                    <p>Set messages to vanish after being read.</p>
+                </div>
+                <div class="sec-item fade-in-up" style="animation-delay: 0.3s;">
+                    <i class="fa-solid fa-lock"></i>
+                    <h4>Lock Chat</h4>
+                    <p>Secure specific conversations with biometric authentication.</p>
+                </div>
+                <div class="sec-item fade-in-up" style="animation-delay: 0.4s;">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <h4>Block & Mute</h4>
+                    <p>Easily block unwanted users or mute noisy conversations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2 class="fade-in-up">Ready to Show Off?</h2>
+        <p class="fade-in-up">Join thousands of users today and find your perfect match.</p>
+        <button class="btn-primary fade-in-up">Download App Now</button>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Logo">
+                <span>Show Off</span>
+            </div>
+            <p>© 2026 Show Off App. All rights reserved.</p>
+            <div class="socials">
+                <i class="fa-brands fa-twitter"></i>
+                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-brands fa-tiktok"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
