@@ -15,6 +15,10 @@ class UserModel {
   final bool isOnline;
   final DateTime? lastActive;
 
+  final int postsCount;
+  final int lovedByCount;
+  final int matchedCount;
+
   UserModel({
     required this.id,
     required this.name,
@@ -31,6 +35,9 @@ class UserModel {
     this.isBlockedBy = false,
     this.isOnline = false,
     this.lastActive,
+    this.postsCount = 0,
+    this.lovedByCount = 0,
+    this.matchedCount = 0,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +57,9 @@ class UserModel {
       isBlockedBy: json['isBlockedBy'] ?? false,
       isOnline: json['isOnline'] ?? false,
       lastActive: json['lastActive'] != null ? DateTime.parse(json['lastActive']) : null,
+      postsCount: json['postsCount'] ?? 0,
+      lovedByCount: json['lovedByCount'] ?? 0,
+      matchedCount: json['matchedCount'] ?? 0,
     );
   }
 
@@ -70,6 +80,9 @@ class UserModel {
       'isBlockedBy': isBlockedBy,
       'isOnline': isOnline,
       'lastActive': lastActive?.toIso8601String(),
+      'postsCount': postsCount,
+      'lovedByCount': lovedByCount,
+      'matchedCount': matchedCount,
     };
   }
 }

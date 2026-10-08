@@ -46,3 +46,18 @@ const updateProfile = async (req, res) => {
 };
 
 module.exports = { search, discover, updateProfile };
+
+const getMyProfile = async (req, res) => {
+    try {
+        const user = await userService.getProfileWithStats(req.user.id);
+        res.status(200).json({
+            success: true,
+            message: 'Profile fetched successfully',
+            user
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+module.exports.getMyProfile = getMyProfile;

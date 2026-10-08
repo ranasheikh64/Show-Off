@@ -246,7 +246,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
       
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
+        decoration: const BoxDecoration(color: Colors.transparent),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -256,7 +256,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                 margin: EdgeInsets.only(bottom: 8.h),
                 padding: EdgeInsets.all(8.w),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8.r),
                   border: Border(left: BorderSide(color: AppTheme.primaryBlue, width: 4.w)),
                 ),
@@ -268,12 +268,12 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                         children: [
                           Text(replyMsg.sender?.name ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp, color: AppTheme.primaryBlue)),
                           SizedBox(height: 2.h),
-                          Text(replyMsg.content, style: TextStyle(fontSize: 12.sp, color: Colors.black87), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text(replyMsg.content, style: TextStyle(fontSize: 12.sp, color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 16, color: Colors.black54),
+                      icon: const Icon(Icons.close, size: 16, color: Colors.white54),
                       onPressed: () => _chatCtrl.setReplyTo(null),
                     ),
                   ],
@@ -298,7 +298,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                       },
                       child: Icon(
                         _showEmojiPicker ? Icons.keyboard : Icons.sentiment_satisfied_alt,
-                        color: Colors.grey[600],
+                        color: Colors.white54,
                         size: 26.w,
                       ),
                     ),
@@ -313,7 +313,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                       ? Container(
                           padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF0F4FA),
+                            color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(24.r),
                           ),
                           child: Row(
@@ -332,7 +332,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                           ? Container(
                               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF0F4FA),
+                                color: Colors.white.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(24.r),
                               ),
                               child: Row(
@@ -355,7 +355,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                                   Expanded(
                                     child: Text(
                                       _isPlaying ? _formatDuration(_playbackPosition) : _formatDuration(_recordSeconds),
-                                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.black87),
+                                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.white),
                                     ),
                                   ),
                                 ],
@@ -363,7 +363,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                             )
                           : Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF4F6F9),
+                                color: Colors.white.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(24.r),
                               ),
                               child: Row(
@@ -376,10 +376,10 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                                       minLines: 1,
                                       maxLines: 4,
                                       textCapitalization: TextCapitalization.sentences,
-                                      style: TextStyle(fontSize: 15.sp),
+                                      style: TextStyle(fontSize: 15.sp, color: Colors.white),
                                       decoration: InputDecoration(
                                         hintText: 'Type a message...',
-                                        hintStyle: TextStyle(color: Colors.grey[500], fontSize: 15.sp),
+                                        hintStyle: TextStyle(color: Colors.white54, fontSize: 15.sp),
                                         border: InputBorder.none,
                                         contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                                       ),
@@ -388,7 +388,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                                   Padding(
                                     padding: EdgeInsets.only(right: 8.w, bottom: 4.h),
                                     child: IconButton(
-                                      icon: Icon(Icons.attach_file, color: Colors.grey[600], size: 24.w),
+                                      icon: Icon(Icons.attach_file, color: Colors.white54, size: 24.w),
                                       onPressed: _pickImage,
                                     ),
                                   ),
@@ -452,18 +452,19 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                   onBackspacePressed: _onBackspacePressed,
                   config: Config(
                     emojiViewConfig: EmojiViewConfig(
-                      backgroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF16182B),
                       columns: 7,
                       emojiSizeMax: 28 * (Platform.isIOS ? 1.3 : 1.0),
                     ),
                     categoryViewConfig: const CategoryViewConfig(
-                      backgroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF16182B),
                       dividerColor: Colors.transparent,
                       indicatorColor: AppTheme.primaryBlue,
                       iconColorSelected: AppTheme.primaryBlue,
-                      iconColor: Colors.grey,
+                      iconColor: Colors.white54,
                     ),
                     bottomActionBarConfig: const BottomActionBarConfig(
+                      backgroundColor: const Color(0xFF16182B),
                       showBackspaceButton: true,
                       showSearchViewButton: false,
                     ),

@@ -60,18 +60,73 @@ class ShowOffPostCard extends StatelessWidget {
   }
 
   Widget _userInfo() {
+    final user = post.user;
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(
-        post.user?.name ?? 'Unknown',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20.sp,
-          fontWeight: FontWeight.w800,
-          shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (user?.profileImage != null) ...[
+                CircleAvatar(
+                  radius: 16.r,
+                  backgroundImage: NetworkImage(user!.profileImage!),
+                ),
+                SizedBox(width: 8.w),
+              ],
+              Expanded(
+                child: Text(
+                  user?.name ?? 'Unknown',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w800,
+                    shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+                  ),
+                ),
+              ),
+              if (user?.age != null)
+                Text(
+                  '${user!.age}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+                  ),
+                ),
+            ],
+          ),
+          if (user?.passion != null && user!.passion.isNotEmpty) ...[
+            SizedBox(height: 6.h),
+            Text(
+              user.passion.take(3).join(' • '),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 13.sp,
+                shadows: const [Shadow(color: Colors.black54, blurRadius: 4)],
+              ),
+            ),
+          ],
+          if (user?.preferences != null && user!.preferences.isNotEmpty) ...[
+            SizedBox(height: 4.h),
+            Text(
+              'Looking for: ${user.preferences.take(2).join(', ')}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12.sp,
+                shadows: const [Shadow(color: Colors.black54, blurRadius: 4)],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

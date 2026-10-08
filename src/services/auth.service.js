@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendOTP } = require('./email.service');
+const userService = require('./user.service');
 
 const registerUser = async (name, username, email, password, gender, age, passion, location) => {
     // Check if user exists
@@ -57,7 +58,11 @@ const loginUser = async (email, password) => {
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-    return { token, user: { id: user.id, name: user.name, email: user.email } };
+    
+    // Fetch full profile with stats
+    const userWithStats = await userService.getProfileWithStats(user.id);
+    
+    return { token, user: userWithStats };
 };
 
 const processForgotPassword = async (email) => {

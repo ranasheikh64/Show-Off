@@ -30,19 +30,37 @@ const saveMessage = async (chatId, senderId, content, replyTo = null, duration =
 
     await newMessage.save();
 
-    // Update the latest message of the chat and clear deletedBy so it reappears
-    await Chat.findByIdAndUpdate(chatId, { 
+    // Update the latest message of the chat, clear deletedBy, and increment messageCount
+    const updatedChat = await Chat.findByIdAndUpdate(chatId, { 
         latestMessage: newMessage._id,
+        $inc: { messageCount: 1 },
         $set: { deletedBy: [] } 
-    });
+    }, { new: true });
 
-    return await Message.findById(newMessage._id)
+    let promptMatch = false;
+    if (updatedChat && !updatedChat.isGroupChat && updatedChat.matchStatus === 'pending') {
+        const stage = updatedChat.promptStage || 0;
+        let threshold = 5;
+        
+        if (stage === 1) threshold = 35;
+        else if (stage === 2) threshold = 85;
+        else if (stage > 2) threshold = 85 + ((stage - 2) * 100);
+
+        // Use exact match to trigger the event precisely when the threshold is hit
+        if (updatedChat.messageCount === threshold) {
+            promptMatch = true;
+        }
+    }
+
+    const savedMessage = await Message.findById(newMessage._id)
         .populate('sender', 'name username email')
         .populate('chat')
         .populate({
             path: 'replyTo',
             populate: { path: 'sender', select: 'name username email' }
         });
+
+    return { message: savedMessage, promptMatch };
 };
 
 const fetchMessages = async (chatId, userId, page = 1, limit = 20, searchQuery = "") => {

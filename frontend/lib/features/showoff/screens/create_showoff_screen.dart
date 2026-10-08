@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../core/constants/app_theme.dart';
 import '../controllers/showoff_controller.dart';
@@ -27,9 +29,31 @@ class _CreateShowOffScreenState extends State<CreateShowOffScreen> {
     if (_isPicking) return;
     _isPicking = true;
     try {
-      final picked = await _picker.pickMultiImage();
+      final picked = await _picker.pickMultiImage(); // Pick without compression first
       if (picked.isNotEmpty) {
-        setState(() => _images.addAll(picked.map((e) => File(e.path))));
+        final dir = await getTemporaryDirectory();
+        
+        for (var x in picked) {
+          final originalFile = File(x.path);
+          final originalBytes = await originalFile.length();
+          final originalKb = originalBytes / 1024;
+          
+          final targetPath = '${dir.path}/${DateTime.now().millisecondsSinceEpoch}_comp.jpg';
+          final compressedFile = await FlutterImageCompress.compressAndGetFile(
+            x.path,
+            targetPath,
+            quality: 50,
+          );
+          
+          if (compressedFile != null) {
+            final compressedBytes = await File(compressedFile.path).length();
+            final compressedKb = compressedBytes / 1024;
+            debugPrint('=== ORIGINAL SIZE: ${originalKb.toStringAsFixed(2)} KB | COMPRESSED SIZE: ${compressedKb.toStringAsFixed(2)} KB ===');
+            setState(() => _images.add(File(compressedFile.path)));
+          } else {
+            setState(() => _images.add(originalFile));
+          }
+        }
       }
     } finally {
       _isPicking = false;
@@ -68,7 +92,7 @@ class _CreateShowOffScreenState extends State<CreateShowOffScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: const Color(0xFF16182B),
       body: Obx(() {
         if (_ctrl.isUploading.value) {
           return CreateUploadProgress(progress: _ctrl.uploadProgress.value);
@@ -94,11 +118,11 @@ class _CreateShowOffScreenState extends State<CreateShowOffScreen> {
   Widget _buildAppBar() {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF16182B),
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
@@ -163,11 +187,11 @@ class _CreateShowOffScreenState extends State<CreateShowOffScreen> {
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       child: Row(
         children: [
-          Icon(Icons.info_outline_rounded, size: 16.sp, color: AppTheme.textSecondary),
+          Icon(Icons.info_outline_rounded, size: 16.sp, color: Colors.white70),
           SizedBox(width: 6.w),
           Text(
             'First photo will be your cover · Tap + to add more',
-            style: TextStyle(fontSize: 12.sp, color: AppTheme.textSecondary),
+            style: TextStyle(fontSize: 12.sp, color: Colors.white70),
           ),
         ],
       ),

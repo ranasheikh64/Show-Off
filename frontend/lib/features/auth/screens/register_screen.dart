@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../core/constants/custom_assets.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../controllers/auth_controller.dart';
@@ -36,7 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF16182B),
       appBar: AppBar(leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => context.pop())),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(24.w),
@@ -45,6 +46,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Image.asset(
+                  CustomAssets.transparentLogo,
+                  height: 100.h,
+                ),
+              ),
               SizedBox(height: 20.h),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
@@ -56,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               SizedBox(height: 8.h),
-              Text('Sign up to get started', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16.sp)),
+              Text('Sign up to get started', style: TextStyle(color: Colors.white70, fontSize: 16.sp)),
               SizedBox(height: 32.h),
               CustomTextField(
                 label: 'Full Name',
@@ -77,6 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hint: 'Enter your email',
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
                 errorText: _authCtrl.registerEmailError.value,
                 onChanged: (val) => _authCtrl.registerEmailError.value = null,
                 validator: (v) => v!.isEmpty ? 'Required' : null,

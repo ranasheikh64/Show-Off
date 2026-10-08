@@ -137,6 +137,27 @@ function formatChatsForUser(chats, currentUserId, userPinnedChats = []) {
                 return u;
             });
         }
+        
+        // Merge global and local pinned messages for this user
+        const globalPins = chatObj.pinnedMessages || [];
+        const localPins = (chatObj.localPinnedMessages || [])
+            .filter(p => p.pinnedBy.toString() === currentUserId.toString())
+            .map(p => p.messageId);
+            
+        // Use Set to remove duplicates just in case
+        chatObj.pinnedMessages = [...new Set([...globalPins, ...localPins])];
+        delete chatObj.localPinnedMessages;
+
+        // Add mute status
+        const muteEntry = (chatObj.mutedBy || []).find(m => m.user.toString() === currentUserId.toString());
+        if (muteEntry && new Date(muteEntry.mutedUntil) > new Date()) {
+            chatObj.isMuted = true;
+            chatObj.mutedUntil = muteEntry.mutedUntil;
+        } else {
+            chatObj.isMuted = false;
+        }
+        delete chatObj.mutedBy;
+
         return chatObj;
     });
 }
@@ -294,15 +315,39 @@ const clearChatHistoryForUser = async (chatId, userId) => {
     return chat;
 };
 
-const togglePinMessage = async (chatId, messageId, userId) => {
+const togglePinMessage = async (chatId, messageId, userId, isGlobal = null) => {
     const chat = await Chat.findById(chatId);
     if (!chat) throw new Error("Chat not found");
 
-    const index = chat.pinnedMessages.findIndex(id => id.toString() === messageId.toString());
-    if (index > -1) {
-        chat.pinnedMessages.splice(index, 1); // Unpin
+    if (isGlobal === null) {
+        // Generic Unpin (Remove from both Global and Local)
+        const globalIndex = chat.pinnedMessages.findIndex(id => id.toString() === messageId.toString());
+        if (globalIndex > -1) chat.pinnedMessages.splice(globalIndex, 1);
+        
+        const localIndex = chat.localPinnedMessages.findIndex(
+            p => p.messageId.toString() === messageId.toString() && p.pinnedBy.toString() === userId.toString()
+        );
+        if (localIndex > -1) chat.localPinnedMessages.splice(localIndex, 1);
+        
+    } else if (isGlobal === true) {
+        // Toggle Global Pin
+        const index = chat.pinnedMessages.findIndex(id => id.toString() === messageId.toString());
+        if (index > -1) {
+            chat.pinnedMessages.splice(index, 1); // Unpin
+        } else {
+            chat.pinnedMessages.push(messageId); // Pin
+        }
     } else {
-        chat.pinnedMessages.push(messageId); // Pin
+        // Toggle Local Pin (Pin for me)
+        const localIndex = chat.localPinnedMessages.findIndex(
+            p => p.messageId.toString() === messageId.toString() && p.pinnedBy.toString() === userId.toString()
+        );
+        
+        if (localIndex > -1) {
+            chat.localPinnedMessages.splice(localIndex, 1); // Unpin locally
+        } else {
+            chat.localPinnedMessages.push({ messageId, pinnedBy: userId }); // Pin locally
+        }
     }
     
     await chat.save();
@@ -327,3 +372,23 @@ module.exports = {
     clearChatHistoryForUser,
     togglePinMessage
 };
+
+const processMatchDecision = async (chatId, userId, decision) => {
+    const chat = await Chat.findById(chatId);
+    if (!chat) throw new Error("Chat not found");
+
+    if (decision === 'match') {
+        chat.matchStatus = 'matched';
+    } else if (decision === 'unmatch') {
+        chat.matchStatus = 'unmatched';
+    } else if (decision === 'not_now') {
+        chat.promptStage = (chat.promptStage || 0) + 1;
+    } else {
+        throw new Error("Invalid decision. Must be 'match', 'unmatch', or 'not_now'");
+    }
+
+    await chat.save();
+    return chat;
+};
+
+module.exports.processMatchDecision = processMatchDecision;

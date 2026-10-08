@@ -24,13 +24,23 @@ const chatSchema = new mongoose.Schema({
             timestamp: { type: Date }
         }
     ],
-    pinnedMessages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
+    pinnedMessages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }], // Global pins
+    localPinnedMessages: [ // Local pins (Pin for me)
+        {
+            messageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
+            pinnedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+        }
+    ],
     mutedBy: [
         {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
             mutedUntil: { type: Date } // Date until the chat is muted. If very far in future, it means 'Always'
         }
-    ]
+    ],
+    // Match fields
+    matchStatus: { type: String, enum: ['pending', 'matched', 'unmatched'], default: 'pending' },
+    messageCount: { type: Number, default: 0 },
+    promptStage: { type: Number, default: 0 } // 0 = waiting for 5, 1 = waiting for 35, etc.
 }, { timestamps: true });
 
 module.exports = mongoose.model('Chat', chatSchema);

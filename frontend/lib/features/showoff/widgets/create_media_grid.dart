@@ -51,11 +51,11 @@ class _AddTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: AppTheme.primaryBlue.withOpacity(0.4),
+            color: const Color(0xFFFF4D8D).withOpacity(0.4),
             width: 2,
             strokeAlign: BorderSide.strokeAlignInside,
           ),
-          color: AppTheme.primaryBlue.withOpacity(0.06),
+          color: const Color(0xFFFF4D8D).withOpacity(0.1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -63,7 +63,7 @@ class _AddTile extends StatelessWidget {
             Icon(
               Icons.add_photo_alternate_rounded,
               size: 32.sp,
-              color: AppTheme.primaryBlue,
+              color: const Color(0xFFFF4D8D),
             ),
             SizedBox(height: 6.h),
             Text(
@@ -71,7 +71,7 @@ class _AddTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.primaryBlue,
+                color: const Color(0xFFFF4D8D),
               ),
             ),
           ],

@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import '../services/auth_service.dart';
 import '../../../core/constants/api_url.dart';
 import '../../../core/network/dio_client.dart';
+import '../../chat/services/socket_service.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -20,10 +21,28 @@ class AuthController extends GetxController {
     _loadUserFromHive();
   }
 
-  void _loadUserFromHive() {
+  void _loadUserFromHive() async {
     final userData = HiveService.getUser();
     if (userData != null) {
       currentUser.value = UserModel.fromJson(Map<String, dynamic>.from(userData));
+      // Fetch fresh profile in background
+      try {
+        final freshUser = await _authService.getProfile();
+        currentUser.value = freshUser;
+        await HiveService.saveUser(freshUser.toJson());
+      } catch (e) {
+        debugPrint('Failed to fetch fresh profile: $e');
+      }
+    }
+  }
+
+  Future<void> refreshProfile() async {
+    try {
+      final freshUser = await _authService.getProfile();
+      currentUser.value = freshUser;
+      await HiveService.saveUser(freshUser.toJson());
+    } catch (e) {
+      debugPrint('Failed to fetch fresh profile: $e');
     }
   }
 
@@ -186,6 +205,10 @@ class AuthController extends GetxController {
   Future<void> logout(BuildContext context) async {
     await HiveService.clearAuth();
     currentUser.value = null;
+
+    try {
+      SocketService.disconnect();
+    } catch (_) {}
 
     // Reset all GetX controllers so they fetch fresh data on next login.
     // force: true ensures they are removed from memory even if permanent.

@@ -77,3 +77,30 @@ const updateProfile = async (userId, updateData) => {
 };
 
 module.exports = { searchUsers, discoverUsers, updateProfile };
+
+const Showoff = require('../models/showoff.model');
+const ShowOffChoice = require('../models/showoffChoice.model');
+const Chat = require('../models/chat.model');
+
+const getProfileWithStats = async (userId) => {
+    const user = await User.findById(userId).select('-password -otp -otpExpiry').lean();
+    if (!user) throw new Error('User not found');
+
+    const postsCount = await Showoff.countDocuments({ user: userId });
+    const lovedByCount = await ShowOffChoice.countDocuments({ chooser: userId });
+    
+    // We will assume matchedCount is stored directly in user model and incremented on match,
+    // or we can count Chats that have matchStatus = 'matched' where users includes userId
+    const matchedChatsCount = await Chat.countDocuments({ users: userId, matchStatus: 'matched' });
+
+    user.postsCount = postsCount;
+    user.lovedByCount = lovedByCount;
+    user.matchedCount = matchedChatsCount; // Override what's in DB for now
+
+    // update DB in background optionally
+    User.findByIdAndUpdate(userId, { postsCount, lovedByCount, matchedCount: matchedChatsCount }).exec();
+
+    return user;
+};
+
+module.exports.getProfileWithStats = getProfileWithStats;

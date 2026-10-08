@@ -24,7 +24,16 @@ class ShowOffController {
       const myPosts = req.query.myPosts === 'true';
       const userId = myPosts ? req.user.id : null;
 
-      const result = await showOffService.getFeed(page, limit, userId, req.user.id);
+      const filters = {
+        minAge: req.query.minAge ? parseInt(req.query.minAge) : null,
+        maxAge: req.query.maxAge ? parseInt(req.query.maxAge) : null,
+        gender: req.query.gender,
+        petLover: req.query.petLover,
+        passion: req.query.passion,
+        lookingFor: req.query.lookingFor,
+      };
+
+      const result = await showOffService.getFeed(page, limit, userId, req.user.id, filters);
       res.status(200).json({ success: true, ...result });
     } catch (error) {
       res.status(500).json({ success: false, message: error.message });

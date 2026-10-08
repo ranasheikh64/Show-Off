@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../auth/controllers/auth_controller.dart';
@@ -35,23 +34,28 @@ class _ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0B0C1F),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildSliverAppBar(context, user),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                _buildProfileInfo(context, user),
-                SizedBox(height: 24.h),
-                _buildStatsRow(context),
-                SizedBox(height: 32.h),
-                _buildMenuSection(context, authCtrl),
-                SizedBox(height: 40.h),
-              ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await authCtrl.refreshProfile();
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          slivers: [
+            _buildSliverAppBar(context, user),
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  _buildProfileInfo(context, user),
+                  SizedBox(height: 24.h),
+                  _buildStatsRow(context, user),
+                  SizedBox(height: 32.h),
+                  _buildMenuSection(context, authCtrl),
+                  SizedBox(height: 40.h),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -289,7 +293,7 @@ class _ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow(BuildContext context) {
+  Widget _buildStatsRow(BuildContext context, UserModel user) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Container(
@@ -306,11 +310,11 @@ class _ProfileView extends StatelessWidget {
         ),
         child: Row(
           children: [
-            _statItem('Posts', '12'),
+            _statItem('Posts', user.postsCount.toString()),
             _statDivider(),
-            _statItem('Loved by', '48'),
+            _statItem('Loved', user.lovedByCount.toString()),
             _statDivider(),
-            _statItem('Matched', '7'),
+            _statItem('Matched', user.matchedCount.toString()),
           ],
         ),
       ),

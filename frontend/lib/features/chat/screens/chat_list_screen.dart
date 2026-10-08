@@ -56,20 +56,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0B0C1F),
       appBar: AppBar(
         title: const Text(
           'Messages',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF0B0C1F),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            onPressed: () => _authCtrl.logout(context),
-          ),
-        ],
+        iconTheme: const IconThemeData(color: Colors.white),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(60.h),
           child: Padding(
@@ -79,15 +74,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Search chats...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                hintStyle: TextStyle(color: Colors.white54),
+                prefixIcon: const Icon(Icons.search, color: Colors.white54),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Colors.white.withOpacity(0.1),
                 contentPadding: EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide.none,
                 ),
               ),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -109,7 +106,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 SizedBox(height: 16.h),
                 Text(
                   'No chats found',
-                  style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                  style: TextStyle(fontSize: 16.sp, color: Colors.white54),
                 ),
               ],
             ),
@@ -137,7 +134,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       Text(
                         'Pinned Chats',
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: Colors.white54,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                         ),
@@ -162,7 +159,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 },
               ),
               SliverToBoxAdapter(
-                child: Divider(height: 1, color: Colors.grey[200]),
+                child: Divider(height: 1, color: Colors.white10),
               ),
             ],
             SliverList(
@@ -180,22 +177,33 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void _showChatContextMenu(BuildContext context, ChatModel chat) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: const Color(0xFF1E213A),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
       builder: (context) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              SizedBox(height: 12.h),
+              Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+              SizedBox(height: 16.h),
               ListTile(
                 leading: Icon(
                   chat.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
                 title: Text(
                   chat.isPinned ? 'Unpin chat' : 'Pin chat',
-                  style: TextStyle(fontSize: 16.sp),
+                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
                 ),
                 onTap: () {
                   _chatCtrl.togglePinChat(chat.id);
@@ -204,28 +212,25 @@ class _ChatListScreenState extends State<ChatListScreen> {
               ),
               ListTile(
                 leading: Icon(
-                  Icons.notifications_off_outlined,
-                  color: Colors.black87,
+                  chat.isMuted ? Icons.notifications_active_outlined : Icons.notifications_off_outlined,
+                  color: Colors.white,
                 ),
                 title: Text(
-                  'Mute notifications',
-                  style: TextStyle(fontSize: 16.sp),
+                  chat.isMuted ? 'Unmute notifications' : 'Mute notifications',
+                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  _showMuteOptions(context, chat);
+                  if (chat.isMuted) {
+                    _chatCtrl.unmuteChat(chat.id);
+                  } else {
+                    _showMuteOptions(context, chat);
+                  }
                 },
               ),
+
               ListTile(
-                leading: Icon(Icons.clear_all, color: Colors.black87),
-                title: Text('Clear history', style: TextStyle(fontSize: 16.sp)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showClearHistoryConfirm(context, chat);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete_outline, color: Colors.redAccent),
+                leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
                 title: Text(
                   'Delete chat',
                   style: TextStyle(fontSize: 16.sp, color: Colors.redAccent),
@@ -235,6 +240,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   _showDeleteConfirm(context, chat);
                 },
               ),
+              SizedBox(height: 16.h),
             ],
           ),
         );
@@ -245,14 +251,25 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void _showMuteOptions(BuildContext context, ChatModel chat) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: const Color(0xFF1E213A),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
       builder: (context) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              SizedBox(height: 12.h),
+              Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+              SizedBox(height: 16.h),
               Padding(
                 padding: EdgeInsets.all(16.w),
                 child: Text(
@@ -260,30 +277,35 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
               ListTile(
-                title: const Text('8 hours'),
+                leading: const Icon(Icons.timer_outlined, color: Colors.white),
+                title: const Text('8 hours', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   _chatCtrl.muteChat(chat.id, 8);
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: const Text('1 week'),
+                leading: const Icon(Icons.calendar_today_outlined, color: Colors.white),
+                title: const Text('1 week', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   _chatCtrl.muteChat(chat.id, 24 * 7);
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: const Text('Always'),
+                leading: const Icon(Icons.notifications_off, color: Colors.white),
+                title: const Text('Always', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   _chatCtrl.muteChat(chat.id, null);
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 16.h),
             ],
           ),
         );
@@ -291,54 +313,59 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  void _showClearHistoryConfirm(BuildContext context, ChatModel chat) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear history'),
-        content: const Text(
-          'Are you sure you want to clear this chat history?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _chatCtrl.clearHistory(chat.id);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            child: const Text('Clear', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showDeleteConfirm(BuildContext context, ChatModel chat) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete chat'),
-        content: const Text(
-          'Are you sure you want to delete this chat? This cannot be undone.',
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFF1E213A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.delete_outline, color: Colors.redAccent, size: 48.sp),
+              SizedBox(height: 16.h),
+              Text(
+                'Delete Chat',
+                style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Are you sure you want to delete this chat? This cannot be undone.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 14.sp),
+              ),
+              SizedBox(height: 24.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel', style: TextStyle(color: Colors.white70, fontSize: 16.sp)),
+                    ),
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _chatCtrl.deleteChat(chat.id);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                      ),
+                      child: Text('Delete', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _chatCtrl.deleteChat(chat.id);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
@@ -403,7 +430,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         _showChatContextMenu(context, chat);
       },
       child: Container(
-        color: chat.isPinned ? Colors.grey[50] : Colors.white,
+        color: chat.isPinned ? Colors.white.withOpacity(0.05) : Colors.transparent,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         child: Row(
           children: [
@@ -413,14 +440,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 CircleAvatar(
                   radius: 26.r,
                   backgroundColor: const Color(0xFF91A3F4), // Light blue-purple
-                  child: Text(
-                    name[0].toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.sp,
-                    ),
-                  ),
+                  backgroundImage: (otherUser?.profileImage != null)
+                      ? NetworkImage(otherUser!.profileImage!)
+                      : null,
+                  child: (otherUser?.profileImage == null)
+                      ? Text(
+                          name.isNotEmpty ? name[0].toUpperCase() : '?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.sp,
+                          ),
+                        )
+                      : null,
                 ),
                 if (isOnline)
                   Positioned(
@@ -444,15 +476,37 @@ class _ChatListScreenState extends State<ChatListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                      color: Colors.black87,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.sp,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (chat.isLocked) ...[
+                        SizedBox(width: 6.w),
+                        Icon(
+                          Icons.lock_outline,
+                          size: 14.sp,
+                          color: Colors.grey[400],
+                        ),
+                      ],
+                      if (chat.isMuted) ...[
+                        SizedBox(width: 6.w),
+                        Icon(
+                          Icons.notifications_off,
+                          size: 14.sp,
+                          color: Colors.grey[400],
+                        ),
+                      ],
+                    ],
                   ),
                   SizedBox(height: 4.h),
                   Row(
@@ -480,8 +534,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                             final textStyle = TextStyle(
                               color: chat.unreadCount > 0
-                                  ? Colors.black87
-                                  : Colors.grey[600],
+                                  ? Colors.white
+                                  : Colors.white54,
                               fontSize: 14.sp,
                               fontWeight: chat.unreadCount > 0
                                   ? FontWeight.w600
@@ -534,7 +588,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     style: TextStyle(
                       color: chat.unreadCount > 0
                           ? AppTheme.primaryBlue
-                          : Colors.grey[500],
+                          : Colors.white54,
                       fontSize: 12.sp,
                       fontWeight: chat.unreadCount > 0
                           ? FontWeight.bold

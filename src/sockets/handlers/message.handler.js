@@ -7,10 +7,15 @@ module.exports = (io, socket) => {
         try {
             const { chatId, content, replyTo, duration } = data; // replyTo and duration are optional
             
-            const message = await messageService.saveMessage(chatId, socket.user.id, content, replyTo, duration);
+            const { message, promptMatch } = await messageService.saveMessage(chatId, socket.user.id, content, replyTo, duration);
             
             // Emit to the specific chat room (for users who have the chat screen open)
             io.to(chatId).emit("new_message", message);
+            
+            // Emit match prompt if thresholds are reached
+            if (promptMatch) {
+                io.to(chatId).emit("match_prompt_ready", { chatId });
+            }
             
             // Emit a global notification to all other users in the chat
             // so they receive it even if they haven't opened this specific chat

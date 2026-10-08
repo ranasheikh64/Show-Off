@@ -9,10 +9,10 @@ class ShowOffService {
     });
     
     await post.save();
-    return await ShowOff.findById(post._id).populate('user', 'name phone profileImage isOnline');
+    return await ShowOff.findById(post._id).populate('user', 'name phone profileImage isOnline age passion preferences');
   }
 
-  async getFeed(page = 1, limit = 20, filterUserId = null, viewerId = null) {
+  async getFeed(page = 1, limit = 20, filterUserId = null, viewerId = null, filters = {}) {
     const skip = (page - 1) * limit;
     
     const query = {};
@@ -20,11 +20,37 @@ class ShowOffService {
       query.user = filterUserId;
     }
 
+    if (filters.minAge || filters.maxAge || filters.gender || filters.passion || filters.lookingFor || filters.petLover) {
+      const userQuery = {};
+      if (filters.minAge || filters.maxAge) {
+        userQuery.age = {};
+        if (filters.minAge) userQuery.age.$gte = filters.minAge;
+        if (filters.maxAge) userQuery.age.$lte = filters.maxAge;
+      }
+      if (filters.gender && filters.gender !== 'All') userQuery.gender = filters.gender;
+      if (filters.petLover && filters.petLover !== 'All') userQuery.petLover = filters.petLover;
+      if (filters.passion) userQuery.passion = { $in: filters.passion.split(',').map(s => s.trim()) };
+      if (filters.lookingFor) userQuery.preferences = { $in: filters.lookingFor.split(',').map(s => s.trim()) };
+
+      const User = require('../models/user.model');
+      const matchingUsers = await User.find(userQuery).select('_id');
+      const userIds = matchingUsers.map(u => u._id);
+      
+      if (query.user) {
+        if (!userIds.some(id => id.toString() === query.user.toString())) {
+           // No intersection, return empty result to avoid bad query
+           return { posts: [], total: 0, page, pages: 0 };
+        }
+      } else {
+        query.user = { $in: userIds };
+      }
+    }
+
     const found = await ShowOff.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate('user', 'name phone profileImage isOnline');
+      .populate('user', 'name phone profileImage isOnline age passion preferences');
 
     const posts = await this._markChosen(found, viewerId);
     const total = await ShowOff.countDocuments(query);
@@ -70,7 +96,7 @@ class ShowOffService {
     post.images = images;
     await post.save();
     
-    return await ShowOff.findById(post._id).populate('user', 'name phone profileImage isOnline');
+    return await ShowOff.findById(post._id).populate('user', 'name phone profileImage isOnline age passion preferences');
   }
 
   async deletePost(postId, userId) {

@@ -13,6 +13,15 @@ class CustomTextField extends StatefulWidget {
   final String? errorText;
   final void Function(String)? onChanged;
   final bool showStrengthIndicator;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final Color? fillColor;
+  final Color? textColor;
+  final Color? hintColor;
+  final Color? borderColor;
+  final Color? focusedBorderColor;
+  final Color? labelColor;
+  final Iterable<String>? autofillHints;
 
   const CustomTextField({
     super.key,
@@ -26,6 +35,15 @@ class CustomTextField extends StatefulWidget {
     this.errorText,
     this.onChanged,
     this.showStrengthIndicator = false,
+    this.readOnly = false,
+    this.onTap,
+    this.fillColor,
+    this.textColor,
+    this.hintColor,
+    this.borderColor,
+    this.focusedBorderColor,
+    this.labelColor,
+    this.autofillHints,
   });
 
   @override
@@ -90,7 +108,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
-            color: AppTheme.textPrimary,
+            color: widget.labelColor ?? Colors.white,
           ),
         ),
         SizedBox(height: 8.h),
@@ -98,11 +116,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
           controller: widget.controller,
           obscureText: _obscureText,
           keyboardType: widget.keyboardType,
+          autofillHints: widget.autofillHints,
           validator: widget.validator,
           onChanged: _onTextChanged,
+          readOnly: widget.readOnly,
+          onTap: widget.onTap,
+          style: TextStyle(color: widget.textColor ?? Colors.white),
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14.sp),
+            hintStyle: TextStyle(color: widget.hintColor ?? Colors.white54, fontSize: 14.sp),
             error: widget.errorText != null
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
@@ -119,7 +141,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ? IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: AppTheme.textSecondary,
+                      color: widget.hintColor ?? Colors.white54,
                     ),
                     onPressed: () {
                       setState(() {
@@ -129,19 +151,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: widget.fillColor ?? const Color(0xFF282C4A),
             contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+              borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+              borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
+              borderSide: BorderSide(color: widget.focusedBorderColor ?? const Color(0xFFFF4D8D), width: 1),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),

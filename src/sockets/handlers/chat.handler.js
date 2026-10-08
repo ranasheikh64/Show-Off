@@ -165,12 +165,21 @@ module.exports = (io, socket) => {
 
     socket.on("toggle_pin_message", async (data, callback) => {
         try {
-            const { chatId, messageId } = data;
-            const chat = await chatService.togglePinMessage(chatId, messageId, socket.user.id);
+            const { chatId, messageId, isGlobal = null } = data;
+            const chat = await chatService.togglePinMessage(chatId, messageId, socket.user.id, isGlobal);
             
-            // Notify room that pinned messages changed
-            io.to(chatId).emit("pinned_messages_updated", chat.pinnedMessages);
-            if (callback) callback({ success: true, pinnedMessages: chat.pinnedMessages });
+            if (isGlobal) {
+                // Notify room that global pinned messages changed
+                io.to(chatId).emit("pinned_messages_updated", chat.pinnedMessages);
+            }
+            
+            if (callback) {
+                callback({ 
+                    success: true, 
+                    pinnedMessages: chat.pinnedMessages,
+                    localPinnedMessages: chat.localPinnedMessages.filter(p => p.pinnedBy.toString() === socket.user.id.toString()).map(p => p.messageId)
+                });
+            }
         } catch (error) {
             if (callback) callback({ success: false, message: error.message });
         }

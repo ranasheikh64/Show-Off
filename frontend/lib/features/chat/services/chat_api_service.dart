@@ -49,4 +49,11 @@ class ChatApiService {
     final response = await _dio.post(ApiUrl.uploadMedia, data: formData, onSendProgress: onSendProgress);
     return response.data['url'];
   }
+
+  Future<Map<String, dynamic>> postMatchDecision(String chatId, String decision) async {
+    final response = await _dio.post('${ApiUrl.fetchChats}/$chatId/match-decision', data: {
+      'decision': decision,
+    });
+    return response.data;
+  }
 }

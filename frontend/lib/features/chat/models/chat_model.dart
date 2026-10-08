@@ -7,7 +7,8 @@ class ChatModel {
   final String? chatName;
   final List<UserModel> users;
   final MessageModel? latestMessage;
-  final List<String> mutedBy;
+  final bool isMuted;
+  final DateTime? mutedUntil;
   final List<String> pinnedBy;
   final List<String> pinnedMessages;
   final bool isLocked;
@@ -23,7 +24,8 @@ class ChatModel {
     this.chatName,
     required this.users,
     this.latestMessage,
-    this.mutedBy = const [],
+    this.isMuted = false,
+    this.mutedUntil,
     this.pinnedBy = const [],
     this.pinnedMessages = const [],
     this.isLocked = false,
@@ -40,7 +42,8 @@ class ChatModel {
     String? chatName,
     List<UserModel>? users,
     MessageModel? latestMessage,
-    List<String>? mutedBy,
+    bool? isMuted,
+    DateTime? mutedUntil,
     List<String>? pinnedBy,
     List<String>? pinnedMessages,
     bool? isLocked,
@@ -56,7 +59,8 @@ class ChatModel {
       chatName: chatName ?? this.chatName,
       users: users ?? this.users,
       latestMessage: latestMessage ?? this.latestMessage,
-      mutedBy: mutedBy ?? this.mutedBy,
+      isMuted: isMuted ?? this.isMuted,
+      mutedUntil: mutedUntil ?? this.mutedUntil,
       pinnedBy: pinnedBy ?? this.pinnedBy,
       pinnedMessages: pinnedMessages ?? this.pinnedMessages,
       isLocked: isLocked ?? this.isLocked,
@@ -81,7 +85,8 @@ class ChatModel {
       latestMessage: (json['latestMessage'] is Map<String, dynamic>)
           ? MessageModel.fromJson(json['latestMessage'])
           : null,
-      mutedBy: (json['mutedBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      isMuted: json['isMuted'] ?? false,
+      mutedUntil: json['mutedUntil'] != null ? DateTime.parse(json['mutedUntil']) : null,
       pinnedBy: (json['pinnedBy'] as List?)?.map((e) => e.toString()).toList() ?? [],
       pinnedMessages: (json['pinnedMessages'] as List?)?.map((e) => e.toString()).toList() ?? [],
       isLocked: json['isLocked'] ?? false,

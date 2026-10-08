@@ -97,10 +97,111 @@ class MessageBubbleWidget extends StatelessWidget {
                   chatCtrl.setReplyTo(message);
                   Navigator.of(context).pop();
                 }),
-                _buildMenuOption(Icons.push_pin, "Pin", () {
-                  chatCtrl.togglePinMessage(message.id);
-                  Navigator.of(context).pop();
-                }),
+                Builder(
+                  builder: (ctx) {
+                    final chat = chatCtrl.chats.firstWhereOrNull((c) => c.id == chatCtrl.activeChatId.value);
+                    final isPinned = chat?.pinnedMessages.contains(message.id) ?? false;
+                    
+                    return _buildMenuOption(
+                      isPinned ? Icons.push_pin_outlined : Icons.push_pin, 
+                      isPinned ? "Unpin" : "Pin", 
+                      () {
+                        Navigator.of(context).pop();
+                        
+                        if (isPinned) {
+                          // Unpin generic (from both local and global)
+                          chatCtrl.togglePinMessage(message.id);
+                          return;
+                        }
+                        
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              backgroundColor: const Color(0xFF1E213A),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.push_pin,
+                                      color: Colors.blue,
+                                      size: 48,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Pin Message',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Where would you like to pin this message?',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    InkWell(
+                                      onTap: () {
+                                        chatCtrl.togglePinMessage(message.id, isGlobal: false);
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.white10),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Pin for me',
+                                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    InkWell(
+                                      onTap: () {
+                                        chatCtrl.togglePinMessage(message.id, isGlobal: true);
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Pin for everyone',
+                                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    );
+                  }
+                ),
                 _buildMenuOption(Icons.copy, "Copy Text", () {
                   Clipboard.setData(ClipboardData(text: message.content));
                   Navigator.of(context).pop();
@@ -258,7 +359,7 @@ class MessageBubbleWidget extends StatelessWidget {
                 child: const Icon(
                   Icons.timer_outlined,
                   size: 16,
-                  color: Colors.black54,
+                  color: Colors.white70,
                 ),
               ),
               SizedBox(width: 6.w),
@@ -268,7 +369,7 @@ class MessageBubbleWidget extends StatelessWidget {
                   text: TextSpan(
                     style: TextStyle(
                       fontSize: 12.sp,
-                      color: Colors.black54,
+                      color: Colors.white70,
                       height: 1.3,
                     ),
                     children: [
@@ -278,7 +379,7 @@ class MessageBubbleWidget extends StatelessWidget {
                           text: actionText,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Colors.white,
                           ),
                         ),
                     ],
@@ -475,7 +576,7 @@ class MessageBubbleWidget extends StatelessWidget {
         style: TextStyle(
           color: isOnlyEmojiMsg
               ? null
-              : (isMe ? Colors.white : AppTheme.textPrimary),
+              : Colors.white,
           fontSize: isOnlyEmojiMsg ? 40.sp : 15.sp,
         ),
       );
@@ -499,7 +600,7 @@ class MessageBubbleWidget extends StatelessWidget {
               ? Colors.transparent
               : (isHighlighted
                     ? Colors.orange.withOpacity(0.5)
-                    : (isMe ? const Color(0xFF3B82F6) : const Color(0xFFF0F4FA))), // Exact colors from screenshot
+                    : (isMe ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.1))), // Dark theme bubble
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.r),
             topRight: Radius.circular(16.r),
@@ -519,7 +620,12 @@ class MessageBubbleWidget extends StatelessWidget {
             if (message.replyTo != null)
               GestureDetector(
                 onTap: () {
-                  chatCtrl.highlightMessage(message.replyTo!.id);
+                  bool found = chatCtrl.highlightMessage(message.replyTo!.id);
+                  if (!found) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Message is too old and not loaded yet.')),
+                    );
+                  }
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 8.h),
@@ -550,7 +656,7 @@ class MessageBubbleWidget extends StatelessWidget {
                         message.replyTo!.content,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: isMe ? Colors.white70 : Colors.black87,
+                          color: Colors.white70,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -572,7 +678,7 @@ class MessageBubbleWidget extends StatelessWidget {
                       style: TextStyle(
                         color: isOnlyEmojiMsg
                             ? Colors.grey
-                            : (isMe ? Colors.white70 : Colors.black54),
+                            : Colors.white70,
                         fontSize: 10.sp,
                       ),
                     ),
@@ -583,7 +689,7 @@ class MessageBubbleWidget extends StatelessWidget {
                     style: TextStyle(
                       color: isOnlyEmojiMsg
                           ? Colors.grey
-                          : (isMe ? Colors.white70 : Colors.black54),
+                          : Colors.white70,
                       fontSize: 10.sp,
                     ),
                   ),
@@ -935,9 +1041,7 @@ class _AudioBubbleWidgetState extends State<AudioBubbleWidget> {
                         Text(
                           _formatDuration(_duration),
                           style: TextStyle(
-                            color: widget.isMe
-                                ? Colors.white70
-                                : Colors.black54,
+                            color: Colors.white70,
                             fontSize: 10.sp,
                           ),
                         ),

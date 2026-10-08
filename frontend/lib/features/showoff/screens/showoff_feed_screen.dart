@@ -147,6 +147,7 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0B0C1F),
       body: SafeArea(
         child: Column(
           children: [
@@ -188,17 +189,23 @@ class _ShowOffFeedScreenState extends State<ShowOffFeedScreen> {
       posts = posts.where((p) {
         final name = p.user?.name.toLowerCase() ?? '';
         final username = p.user?.username.toLowerCase() ?? '';
-        return name.contains(_searchQuery) || username.contains(_searchQuery);
+        final email = p.user?.email.toLowerCase() ?? '';
+        return name.contains(_searchQuery) || username.contains(_searchQuery) || email.contains(_searchQuery);
       }).toList().obs;
     }
 
     final loading = _showMyPosts
         ? _showOffCtrl.isLoadingMyPosts.value
         : _showOffCtrl.isLoadingFeed.value;
+    final bool hasSearchOrFilter = _showOffCtrl.currentFilters.isNotEmpty || _searchQuery.isNotEmpty;
+
     if (posts.isEmpty) {
       return loading
           ? const Center(child: CircularProgressIndicator())
-          : ShowOffEmptyState(isMyPosts: _showMyPosts);
+          : ShowOffEmptyState(
+              isMyPosts: _showMyPosts,
+              isFiltering: hasSearchOrFilter,
+            );
     }
     return RefreshIndicator(
       onRefresh: _refresh,

@@ -13,23 +13,29 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       primaryColor: primaryBlue,
-      scaffoldBackgroundColor: background,
-      colorScheme: ColorScheme.light(
+      scaffoldBackgroundColor: const Color(0xFF16182B),
+      colorScheme: ColorScheme.dark(
         primary: primaryBlue,
         secondary: darkBlue,
         error: errorRed,
+        background: const Color(0xFF16182B),
       ),
       fontFamily: 'Inter',
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: textPrimary),
+        iconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(
-          color: textPrimary,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
+      ),
+      textTheme: const TextTheme(
+        bodyMedium: TextStyle(color: Colors.white),
+        bodySmall: TextStyle(color: Colors.white70),
+        titleLarge: TextStyle(color: Colors.white),
       ),
     );
   }

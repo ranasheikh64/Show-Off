@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_theme.dart';
+import '../../../core/constants/custom_assets.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../controllers/auth_controller.dart';
@@ -29,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF16182B),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(24.w),
@@ -38,7 +39,14 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 40.h),
+                SizedBox(height: 20.h),
+                Center(
+                  child: Image.asset(
+                    CustomAssets.transparentLogo,
+                    height: 120.h,
+                  ),
+                ),
+                SizedBox(height: 30.h),
                 ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(
                     colors: [Color(0xFFFF4D8D), AppTheme.primaryBlue],
@@ -49,13 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                Text('Log in to continue', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16.sp)),
+                Text('Log in to continue', style: TextStyle(color: Colors.white70, fontSize: 16.sp)),
                 SizedBox(height: 40.h),
                 CustomTextField(
                   label: 'Email',
                   hint: 'Enter your email',
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
                   validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
                 SizedBox(height: 16.h),
@@ -87,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Don\'t have an account? '),
+                    Text('Don\'t have an account? ', style: TextStyle(color: Colors.white70)),
                     GestureDetector(
                       onTap: () => context.push('/register'),
                       child: Text('Register', style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold)),

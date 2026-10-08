@@ -38,4 +38,9 @@ class AuthService {
     final response = await _dio.put(ApiUrl.updateProfile, data: data);
     return UserModel.fromJson(response.data['user']);
   }
+
+  Future<UserModel> getProfile() async {
+    final response = await _dio.get('${ApiUrl.baseUrl}/users/me');
+    return UserModel.fromJson(response.data['user']);
+  }
 }

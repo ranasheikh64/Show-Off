@@ -90,7 +90,19 @@ const userSchema = new mongoose.Schema(
         pinnedChats: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Chat'
-        }]
+        }],
+        postsCount: {
+            type: Number,
+            default: 0
+        },
+        lovedByCount: {
+            type: Number,
+            default: 0
+        },
+        matchedCount: {
+            type: Number,
+            default: 0
+        }
     },
     { timestamps: true }
 );

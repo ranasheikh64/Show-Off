@@ -40,12 +40,30 @@ class ChatController extends GetxController {
   var scrollToMessageIndex = (-1).obs;
   var replyToMessage = Rxn<MessageModel>();
 
+  var matchPromptChatId = RxnString(); // Triggers the match bottom sheet
+
   /// Number of chats (people) that have at least one unread message.
   int get unreadChatCount => chats.where((c) => c.unreadCount > 0).length;
 
-  void highlightMessage(String msgId) {
+  bool highlightMessage(String msgId) {
     highlightedMessageId.value = msgId;
-    final index = currentMessages.indexWhere((m) => m.id == msgId);
+    int index = currentMessages.indexWhere((m) => m.id == msgId);
+    
+    if (index == -1 && activeChatId.value.isNotEmpty) {
+      final localMaps = HiveService.getLocalMessages(activeChatId.value);
+      if (localMaps.isNotEmpty) {
+        final allLocal = localMaps.map((e) => MessageModel.fromJson(Map<String, dynamic>.from(e))).toList();
+        allLocal.sort((a, b) => (b.createdAt ?? DateTime.now()).compareTo(a.createdAt ?? DateTime.now()));
+        
+        final localIndex = allLocal.indexWhere((m) => m.id == msgId);
+        if (localIndex != -1) {
+          currentMessages.assignAll(allLocal.take(localIndex + 20).toList());
+          index = currentMessages.indexWhere((m) => m.id == msgId);
+          currentPage.value = (currentMessages.length / 50).ceil();
+        }
+      }
+    }
+
     if (index != -1) {
       scrollToMessageIndex.value = index;
     }
@@ -54,6 +72,7 @@ class ChatController extends GetxController {
         highlightedMessageId.value = null;
       }
     });
+    return index != -1;
   }
 
   Timer? _disappearingTimer;
@@ -259,6 +278,13 @@ class ChatController extends GetxController {
         SnackBar(content: Text(msg)),
       );
     });
+
+    SocketService.on('match_prompt_ready', (data) {
+      final String chatId = data['chatId'];
+      if (activeChatId.value == chatId) {
+        matchPromptChatId.value = chatId;
+      }
+    });
   }
 
   void _updateChatListLatestMessage(String chatId, MessageModel msg, {bool isNewMessage = false}) {
@@ -410,6 +436,13 @@ class ChatController extends GetxController {
     fetchChats();
   }
 
+  void unmuteChat(String chatId) {
+    SocketService.emit('unmute_chat', {
+      'chatId': chatId,
+    });
+    fetchChats();
+  }
+
   void deleteChat(String chatId) {
     SocketService.emit('delete_chat', {'chatId': chatId});
     chats.removeWhere((c) => c.id == chatId);
@@ -419,8 +452,28 @@ class ChatController extends GetxController {
     SocketService.emit('clear_history', {'chatId': chatId});
     final idx = chats.indexWhere((c) => c.id == chatId);
     if (idx != -1) {
-      chats[idx] = chats[idx].copyWith(latestMessage: null);
+      // Create a new instance without latestMessage
+      chats[idx] = ChatModel(
+        id: chats[idx].id,
+        isGroupChat: chats[idx].isGroupChat,
+        chatName: chats[idx].chatName,
+        users: chats[idx].users,
+        latestMessage: null,
+        isMuted: chats[idx].isMuted,
+        mutedUntil: chats[idx].mutedUntil,
+        pinnedBy: chats[idx].pinnedBy,
+        pinnedMessages: chats[idx].pinnedMessages,
+        isLocked: chats[idx].isLocked,
+        isPinned: chats[idx].isPinned,
+        pinOrder: chats[idx].pinOrder,
+        disappearingTimer: chats[idx].disappearingTimer,
+        disappearingTimerSetBy: chats[idx].disappearingTimerSetBy,
+        unreadCount: chats[idx].unreadCount,
+      );
       chats.refresh();
+    }
+    if (activeChatId.value == chatId) {
+      currentMessages.clear();
     }
   }
 
@@ -642,11 +695,16 @@ class ChatController extends GetxController {
     }
   }
 
-  void togglePinMessage(String messageId) {
+  void togglePinMessage(String messageId, {bool? isGlobal}) {
     if (activeChatId.value.isEmpty) return;
-    SocketService.emit('toggle_pin_message', {
+    SocketService.emitWithAck('toggle_pin_message', {
       'chatId': activeChatId.value,
       'messageId': messageId,
+      'isGlobal': isGlobal,
+    }, (res) {
+      if (res != null && res['success'] == true) {
+        fetchChats(); // Refresh to get the merged pinned messages
+      }
     });
   }
 
@@ -664,12 +722,6 @@ class ChatController extends GetxController {
     SocketService.emitWithAck('block_user', {'blockedId': userId}, (res) {
       if (res != null && res['success'] == true) {
         blockedUserIds.add(userId);
-        MyApp.scaffoldMessengerKey.currentState?.showSnackBar(
-          const SnackBar(
-            content: Text('User blocked successfully'),
-            backgroundColor: Colors.red,
-          ),
-        );
       }
     });
   }
@@ -678,12 +730,6 @@ class ChatController extends GetxController {
     SocketService.emitWithAck('unblock_user', {'blockedId': userId}, (res) {
       if (res != null && res['success'] == true) {
         blockedUserIds.remove(userId);
-        MyApp.scaffoldMessengerKey.currentState?.showSnackBar(
-          const SnackBar(
-            content: Text('User unblocked successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
       }
     });
   }
@@ -743,6 +789,24 @@ class ChatController extends GetxController {
       'chatId': chatId,
       'action': action,
     });
+  }
+
+  Future<void> submitMatchDecision(String chatId, String decision) async {
+    try {
+      final response = await _apiService.postMatchDecision(chatId, decision);
+      if (response['success'] == true) {
+        // Optionally refresh chats or just rely on socket
+        // Refresh the profile if it was a match, because matchedCount increases
+        if (decision == 'match') {
+          final authCtrl = Get.find<AuthController>();
+          await authCtrl.refreshProfile();
+        }
+      }
+    } catch (e) {
+      MyApp.scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text('Failed to submit decision: $e')),
+      );
+    }
   }
 
   // void deleteChat(String chatId) {

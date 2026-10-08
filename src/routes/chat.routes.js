@@ -14,5 +14,14 @@ router.get('/', protect, async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
+router.post('/:chatId/match-decision', protect, async (req, res) => {
+    try {
+        const { decision } = req.body;
+        const chat = await chatService.processMatchDecision(req.params.chatId, req.user.id, decision);
+        res.json({ success: true, chat });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 
 module.exports = router;

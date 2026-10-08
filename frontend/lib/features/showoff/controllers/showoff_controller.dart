@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../models/showoff_model.dart';
 import '../../../core/network/dio_client.dart';
 import '../../../core/constants/api_url.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class ShowOffController extends GetxController {
   final Dio _apiService = DioClient.instance;
@@ -21,10 +22,17 @@ class ShowOffController extends GetxController {
   var currentMyPostsPage = 1;
   var hasMoreMyPosts = true;
 
+  var currentFilters = <String, dynamic>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchFeed();
+  }
+
+  void applyFilters(Map<String, dynamic> filters) {
+    currentFilters.value = filters;
+    fetchFeed(refresh: true);
   }
 
   Future<void> fetchFeed({bool refresh = false}) async {
@@ -37,13 +45,22 @@ class ShowOffController extends GetxController {
 
     isLoadingFeed.value = true;
     try {
+      final queryParams = {
+        'page': currentFeedPage,
+        'limit': 10,
+        'myPosts': false,
+      };
+      
+      // Add non-null/empty filters
+      currentFilters.forEach((key, value) {
+        if (value != null && value.toString().isNotEmpty) {
+          queryParams[key] = value;
+        }
+      });
+
       final response = await _apiService.get(
         ApiUrl.showOffFeed,
-        queryParameters: {
-          'page': currentFeedPage,
-          'limit': 10,
-          'myPosts': false,
-        },
+        queryParameters: queryParams,
       );
       if (response.data['success']) {
         final List<dynamic> data = response.data['posts'];
@@ -132,8 +149,12 @@ class ShowOffController extends GetxController {
       if (response.data['success']) {
         final newPost = ShowOffModel.fromJson(response.data['data']);
         myPosts.insert(0, newPost);
-        // Also add to feed if they are browsing "All" feed that includes their own posts.
-        // Wait, the backend explicitly filtered out "myPosts" depending on the query param!
+        // Refresh profile stats
+        try {
+          if (Get.isRegistered<AuthController>()) {
+            Get.find<AuthController>().refreshProfile();
+          }
+        } catch (_) {}
         return true;
       }
       return false;
@@ -155,6 +176,12 @@ class ShowOffController extends GetxController {
       );
       if (response.data['success'] != true) return null;
       _markUserChosen(userId);
+      // Refresh profile stats
+      try {
+        if (Get.isRegistered<AuthController>()) {
+          Get.find<AuthController>().refreshProfile();
+        }
+      } catch (_) {}
       return response.data['alreadyChosen'] != true;
     } catch (e) {
       print('Error choosing user: $e');
@@ -178,6 +205,12 @@ class ShowOffController extends GetxController {
       if (response.data['success']) {
         feedPosts.removeWhere((p) => p.id == postId);
         myPosts.removeWhere((p) => p.id == postId);
+        // Refresh profile stats
+        try {
+          if (Get.isRegistered<AuthController>()) {
+            Get.find<AuthController>().refreshProfile();
+          }
+        } catch (_) {}
         return true;
       }
       return false;

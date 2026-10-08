@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 
 import '../../../core/constants/app_theme.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../controllers/showoff_controller.dart';
+import 'showoff_filter_bottom_sheet.dart';
 
 class ShowOffHeader extends StatefulWidget {
   final bool showMyPosts;
@@ -60,7 +64,7 @@ class _ShowOffHeaderState extends State<ShowOffHeader> {
                   child: Container(
                     height: 40.h,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: TextField(
@@ -69,16 +73,29 @@ class _ShowOffHeaderState extends State<ShowOffHeader> {
                       onChanged: widget.onSearch,
                       decoration: InputDecoration(
                         hintText: 'Search posts...',
+                        hintStyle: const TextStyle(color: Colors.white54),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.filter_alt_outlined, color: Colors.white70),
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => const ShowoffFilterBottomSheet(),
+                            );
+                          },
+                        ),
                       ),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
               IconButton(
                 icon: Icon(
                   _isSearchExpanded ? Icons.close_rounded : Icons.search_rounded,
-                  color: AppTheme.textPrimary,
+                  color: Colors.white,
                 ),
                 onPressed: () {
                   setState(() {
@@ -86,6 +103,12 @@ class _ShowOffHeaderState extends State<ShowOffHeader> {
                       _isSearchExpanded = false;
                       _searchController.clear();
                       if (widget.onSearch != null) widget.onSearch!('');
+                      
+                      try {
+                        if (Get.isRegistered<ShowOffController>()) {
+                          Get.find<ShowOffController>().applyFilters({});
+                        }
+                      } catch (_) {}
                     } else {
                       _isSearchExpanded = true;
                     }
@@ -93,23 +116,41 @@ class _ShowOffHeaderState extends State<ShowOffHeader> {
                 },
               ),
               if (!_isSearchExpanded)
-                IconButton(
-                  icon: const Icon(Icons.person_rounded, color: AppTheme.textPrimary),
-                  onPressed: () => context.push('/profile'),
-                ),
+                Obx(() {
+                  final user = Get.find<AuthController>().currentUser.value;
+                  return IconButton(
+                    icon: user?.profileImage != null && user!.profileImage!.isNotEmpty
+                        ? Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFFF4D8D),
+                                width: 2,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 14.r,
+                              backgroundImage: NetworkImage(user.profileImage!),
+                              backgroundColor: Colors.white10,
+                            ),
+                          )
+                        : const Icon(Icons.person_rounded, color: Colors.white),
+                    onPressed: () => context.push('/profile'),
+                  );
+                }),
             ],
           ),
           if (!_isSearchExpanded) ...[
             Text(
               'Show your best self & find your match',
-              style: TextStyle(fontSize: 13.sp, color: AppTheme.textSecondary),
+              style: TextStyle(fontSize: 13.sp, color: Colors.white70),
             ),
           ],
           SizedBox(height: 14.h),
           Container(
             padding: EdgeInsets.all(4.w),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.white.withOpacity(0.08),
               borderRadius: BorderRadius.circular(30.r),
               boxShadow: [
                 BoxShadow(
@@ -161,7 +202,7 @@ class _ShowOffHeaderState extends State<ShowOffHeader> {
               Icon(
                 icon,
                 size: 18.sp,
-                color: selected ? Colors.white : AppTheme.textSecondary,
+                color: selected ? Colors.white : Colors.white60,
               ),
               SizedBox(width: 6.w),
               Text(
@@ -169,7 +210,7 @@ class _ShowOffHeaderState extends State<ShowOffHeader> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14.sp,
-                  color: selected ? Colors.white : AppTheme.textSecondary,
+                  color: selected ? Colors.white : Colors.white60,
                 ),
               ),
             ],
