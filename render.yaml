@@ -6,20 +6,4 @@ services:
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: 20
-      - key: PORT
-        value: 5000
-      - key: MONGO_URI
-        sync: false # You will need to add this manually in the Render dashboard
-      - key: JWT_SECRET
-        sync: false # Add manually
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false # Add manually
-      - key: CLOUDINARY_API_KEY
-        sync: false # Add manually
-      - key: CLOUDINARY_API_SECRET
-        sync: false # Add manually
-      - key: EMAIL_USER
-        sync: false # Add manually
-      - key: EMAIL_PASS
-        sync: false # Add manually
+        value: 18.18.0
