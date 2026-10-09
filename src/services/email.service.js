@@ -8,7 +8,11 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD
-    }
+    },
+    tls: {
+        rejectUnauthorized: false
+    },
+    family: 4 // Force IPv4 to fix Render's IPv6 timeout issue
 });
 
 const sendOTP = async (toEmail, otp) => {
