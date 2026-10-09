@@ -63,9 +63,16 @@ app.get(["/", "/showoff", "/showoff/"], (req, res) => {
 });
 
 // Database connection
-mongoose.connect(process.env.MONGO_URI, { family: 4 })
+if (!process.env.MONGO_URI) {
+    console.error('CRITICAL ERROR: MONGO_URI is not defined in Environment Variables!');
+} else {
+    mongoose.connect(process.env.MONGO_URI, { 
+        family: 4,
+        serverSelectionTimeoutMS: 5000 
+    })
     .then(() => console.log('Connected to MongoDB successfully.'))
     .catch((err) => console.error('MongoDB connection error:', err));
+}
 
 // Initialize WebSockets
 server.on('request', (req, res) => {
