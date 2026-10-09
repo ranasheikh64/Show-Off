@@ -65,6 +65,10 @@ mongoose.connect(process.env.MONGO_URI, { family: 4 })
     .catch((err) => console.error('MongoDB connection error:', err));
 
 // Initialize WebSockets
+server.on('request', (req, res) => {
+    console.log(`[RAW HTTP] Method: ${req.method} URL: ${req.url} OriginalURL: ${req.originalUrl || 'none'}`);
+});
+
 const initSockets = require('./sockets/index');
 initSockets(server);
 
