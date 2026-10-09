@@ -6,7 +6,6 @@ const registerMessageHandlers = require('./handlers/message.handler');
 
 const initSockets = (server) => {
     const io = socketIo(server, {
-        path: '/showoff/api/stream',
         cors: { origin: "*", methods: ["GET", "POST"] }
     });
 

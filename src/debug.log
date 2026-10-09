@@ -1,0 +1,84 @@
+[2026-10-09T08:49:46.273Z] Server init started. Node Version: v25.9.0
+ERROR: (node:73123) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7. Use `mongoose.set('strictQuery', false);` if you want to prepare for this change. Or use `mongoose.set('strictQuery', true);` to suppress this warning.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+LOG: Server is running on 0.0.0.0:5000
+LOG: Connected to MongoDB successfully.
+LOG: RECEIVED TOKEN: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFjNjVmZjI1MDdjZDQzZDE4NjA0YmRiIn0sImlhdCI6MTc5MTUyNjQzOSwiZXhwIjoxNzkyMTMxMjM5fQ.AXXoJVwHyPQnGwQsVNpkKexWw-DXDBFSZ5hhp66WKN4
+LOG: === TOKEN RECEIVED === Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFjNjVmZjI1MDdjZDQzZDE4NjA0YmRiIn0sImlhdCI6MTc5MTUyNjQzOSwiZXhwIjoxNzkyMTMxMjM5fQ.AXXoJVwHyPQnGwQsVNpkKexWw-DXDBFSZ5hhp66WKN4
+LOG: User connected: 6ac65ff2507cd43d18604bdb
+LOG: [RAW HTTP] Method: GET URL: /me OriginalURL: /api/users/me
+LOG: [RAW HTTP] Method: GET URL: /feed?page=1&limit=10&myPosts=false OriginalURL: /api/showoff/feed?page=1&limit=10&myPosts=false
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac663e2507cd43d18604be3
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66206507cd43d18604bde
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac663e2507cd43d18604be3
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66206507cd43d18604bde
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac663e2507cd43d18604be3
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac663e2507cd43d18604be3
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66206507cd43d18604bde
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66206507cd43d18604bde
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac70fc0a973d67cd0aa8292
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac663e2507cd43d18604be3
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66206507cd43d18604bde
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66206507cd43d18604bde
+LOG: User disconnected: 6ac65ff2507cd43d18604bdb
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
+LOG: [RAW HTTP] Method: GET URL: /feed?page=1&limit=10&myPosts=false OriginalURL: /api/showoff/feed?page=1&limit=10&myPosts=false
+LOG: RECEIVED TOKEN: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFjNjVmZjI1MDdjZDQzZDE4NjA0YmRiIn0sImlhdCI6MTc5MTUyNjQzOSwiZXhwIjoxNzkyMTMxMjM5fQ.AXXoJVwHyPQnGwQsVNpkKexWw-DXDBFSZ5hhp66WKN4
+LOG: === TOKEN RECEIVED === Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFjNjVmZjI1MDdjZDQzZDE4NjA0YmRiIn0sImlhdCI6MTc5MTUyNjQzOSwiZXhwIjoxNzkyMTMxMjM5fQ.AXXoJVwHyPQnGwQsVNpkKexWw-DXDBFSZ5hhp66WKN4
+LOG: User connected: 6ac65ff2507cd43d18604bdb
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac65e1a507cd43d18604bc2
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac34a3cca41d5ee83a23b45
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66669507cd43d18604bee
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac65e1a507cd43d18604bc2
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac34a3cca41d5ee83a23b45
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66669507cd43d18604bee
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac65e1a507cd43d18604bc2
+LOG: User disconnected: 6ac65ff2507cd43d18604bdb
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
+LOG: [RAW HTTP] Method: GET URL: /feed?page=1&limit=10&myPosts=false OriginalURL: /api/showoff/feed?page=1&limit=10&myPosts=false
+LOG: RECEIVED TOKEN: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFjNjVmZjI1MDdjZDQzZDE4NjA0YmRiIn0sImlhdCI6MTc5MTUyNjQzOSwiZXhwIjoxNzkyMTMxMjM5fQ.AXXoJVwHyPQnGwQsVNpkKexWw-DXDBFSZ5hhp66WKN4
+LOG: === TOKEN RECEIVED === Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFjNjVmZjI1MDdjZDQzZDE4NjA0YmRiIn0sImlhdCI6MTc5MTUyNjQzOSwiZXhwIjoxNzkyMTMxMjM5fQ.AXXoJVwHyPQnGwQsVNpkKexWw-DXDBFSZ5hhp66WKN4
+LOG: User connected: 6ac65ff2507cd43d18604bdb
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac65e1a507cd43d18604bc2
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac34a3cca41d5ee83a23b45
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66669507cd43d18604bee
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac65e1a507cd43d18604bc2
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac34a3cca41d5ee83a23b45
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66669507cd43d18604bee
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac34a3cca41d5ee83a23b45
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac65e1a507cd43d18604bc2
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac34a3cca41d5ee83a23b45
+LOG: User 6ac65ff2507cd43d18604bdb joined chat 6ac66669507cd43d18604bee
+LOG: [RAW HTTP] Method: GET URL: /feed?page=2&limit=10&myPosts=false OriginalURL: /api/showoff/feed?page=2&limit=10&myPosts=false
+LOG: [RAW HTTP] Method: GET URL: /feed?page=1&limit=10&myPosts=true OriginalURL: /api/showoff/feed?page=1&limit=10&myPosts=true
+LOG: [RAW HTTP] Method: GET URL: /feed?page=2&limit=10&myPosts=true OriginalURL: /api/showoff/feed?page=2&limit=10&myPosts=true
+LOG: User disconnected: 6ac65ff2507cd43d18604bdb
+LOG: [RAW HTTP] Method: POST URL: /api/auth/forgot-password OriginalURL: /api/auth/forgot-password
+LOG: [RAW HTTP] Method: POST URL: /api/auth/verify-otp OriginalURL: /api/auth/verify-otp
+LOG: [RAW HTTP] Method: POST URL: /api/auth/reset-password OriginalURL: /api/auth/reset-password
+LOG: [RAW HTTP] Method: POST URL: /api/auth/forgot-password OriginalURL: /api/auth/forgot-password
+LOG: [RAW HTTP] Method: POST URL: /api/auth/verify-otp OriginalURL: /api/auth/verify-otp
+LOG: [RAW HTTP] Method: POST URL: /api/auth/reset-password OriginalURL: /api/auth/reset-password
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
+LOG: [RAW HTTP] Method: GET URL: /feed?page=1&limit=10&myPosts=false OriginalURL: /api/showoff/feed?page=1&limit=10&myPosts=false
+LOG: [RAW HTTP] Method: GET URL: /?page=1&limit=20 OriginalURL: /api/chats?page=1&limit=20
+LOG: RECEIVED TOKEN: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFiNDkzNTdhYTJhMTJlNzNhNWExOTgzIn0sImlhdCI6MTc5MTUzNjM2NSwiZXhwIjoxNzkyMTQxMTY1fQ.LNOx6ier-S4XgZeMKtdqwCFKUW3Ii8QKfCkPf_xQ1hk
+LOG: === TOKEN RECEIVED === Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFiNDkzNTdhYTJhMTJlNzNhNWExOTgzIn0sImlhdCI6MTc5MTUzNjM2NSwiZXhwIjoxNzkyMTQxMTY1fQ.LNOx6ier-S4XgZeMKtdqwCFKUW3Ii8QKfCkPf_xQ1hk
+LOG: User connected: 6ab49357aa2a12e73a5a1983
+LOG: User 6ab49357aa2a12e73a5a1983 joined chat 6ab49931c27db55a297daa21
