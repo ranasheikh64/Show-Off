@@ -1,4 +1,5 @@
-const admin = require('firebase-admin');
+const { getApps, initializeApp, cert } = require('firebase-admin/app');
+const { getMessaging } = require('firebase-admin/messaging');
 const User = require('../models/user.model');
 const fs = require('fs');
 const path = require('path');
@@ -25,9 +26,9 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 }
 
 // Initialize Firebase Admin
-if (serviceAccount && !admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
+if (serviceAccount && getApps().length === 0) {
+    initializeApp({
+        credential: cert(serviceAccount)
     });
 }
 
@@ -40,7 +41,7 @@ if (serviceAccount && !admin.apps.length) {
  */
 const sendPushNotification = async (userId, title, body, data = {}) => {
     try {
-        if (!admin.apps.length) {
+        if (getApps().length === 0) {
             console.log('Firebase Admin is not initialized.');
             return false;
         }
@@ -63,7 +64,7 @@ const sendPushNotification = async (userId, title, body, data = {}) => {
             token: user.fcmToken
         };
 
-        const response = await admin.messaging().send(message);
+        const response = await getMessaging().send(message);
         console.log('Successfully sent message:', response);
         return true;
     } catch (error) {
