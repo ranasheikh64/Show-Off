@@ -52,7 +52,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/showoff', showOffRoutes);
 app.get(["/", "/showoff", "/showoff/"], (req, res) => {
-    res.send("Backend server is running");
+    res.send("Show Off Backend server is running");
 })
 
 // Database connection
