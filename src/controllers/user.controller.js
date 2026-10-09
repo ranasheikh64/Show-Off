@@ -60,4 +60,17 @@ const getMyProfile = async (req, res) => {
     }
 };
 
+const updateFcmToken = async (req, res) => {
+    try {
+        const { fcmToken } = req.body;
+        if (!fcmToken) return res.status(400).json({ success: false, message: 'Token is required' });
+        
+        await userService.updateProfile(req.user.id, { fcmToken });
+        res.status(200).json({ success: true, message: 'FCM Token updated' });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
 module.exports.getMyProfile = getMyProfile;
+module.exports.updateFcmToken = updateFcmToken;

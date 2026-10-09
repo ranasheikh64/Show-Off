@@ -1,4 +1,6 @@
 const showOffService = require('../services/showoff.service');
+const notificationService = require('../services/notification.service');
+const User = require('../models/user.model');
 
 class ShowOffController {
   async createPost(req, res) {
@@ -48,6 +50,19 @@ class ShowOffController {
       }
 
       const result = await showOffService.chooseUser(req.user.id, userId);
+      
+      // Send Push Notification
+      if (!result.alreadyChosen) {
+          const sender = await User.findById(req.user.id).select('name');
+          const senderName = sender ? sender.name : 'Someone';
+          await notificationService.sendPushNotification(
+              userId,
+              'New Love! ❤️',
+              `${senderName} just showed love to you on Show Off!`,
+              { type: 'LOVE' }
+          );
+      }
+
       res.status(200).json({ success: true, ...result });
     } catch (error) {
       const status = error.message.includes('yourself') ? 400 : 500;

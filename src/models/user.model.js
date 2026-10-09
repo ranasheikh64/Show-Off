@@ -102,6 +102,10 @@ const userSchema = new mongoose.Schema(
         matchedCount: {
             type: Number,
             default: 0
+        },
+        fcmToken: {
+            type: String,
+            default: null
         }
     },
     { timestamps: true }

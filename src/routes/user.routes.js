@@ -15,4 +15,7 @@ router.get('/me', protect, userController.getMyProfile);
 // Update user profile
 router.put('/profile', protect, userController.updateProfile);
 
+// Update FCM Token
+router.put('/fcm-token', protect, userController.updateFcmToken);
+
 module.exports = router;

@@ -1,5 +1,6 @@
 const messageService = require('../../services/message.service');
 const chatService = require('../../services/chat.service');
+const notificationService = require('../../services/notification.service');
 
 module.exports = (io, socket) => {
     
@@ -23,6 +24,14 @@ module.exports = (io, socket) => {
                 message.chat.users.forEach(userId => {
                     if (userId && userId.toString() !== socket.user.id) {
                         io.to(userId.toString()).emit("new_message_notification", message);
+                        
+                        // Send Push Notification
+                        notificationService.sendPushNotification(
+                            userId.toString(),
+                            message.sender.name || 'New Message',
+                            message.content || 'Sent an attachment',
+                            { type: 'CHAT', chatId: chatId.toString() }
+                        );
                     }
                 });
             }
