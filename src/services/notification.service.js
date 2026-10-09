@@ -1,5 +1,8 @@
 const admin = require('firebase-admin');
 const User = require('../models/user.model');
+const fs = require('fs');
+const path = require('path');
+
 let serviceAccount;
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -10,9 +13,14 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     }
 } else {
     try {
-        serviceAccount = require('../../show-off-ba1be-firebase-adminsdk-fbsvc-969a4ba46f.json');
+        const filePath = path.join(__dirname, '../../show-off-ba1be-firebase-adminsdk-fbsvc-969a4ba46f.json');
+        if (fs.existsSync(filePath)) {
+            serviceAccount = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        } else {
+            console.warn("Firebase service account JSON not found. Push notifications will be disabled.");
+        }
     } catch (e) {
-        console.warn("Firebase service account JSON not found. Push notifications will be disabled.");
+        console.warn("Firebase service account JSON read error. Push notifications will be disabled.");
     }
 }
 
