@@ -1,0 +1,39 @@
+name: Deploy Backend to HostSeba
+
+on:
+  push:
+    branches:
+      - main # Change this if your main branch is called 'master'
+    paths:
+      - 'src/**'
+      - 'package.json'
+
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v4
+
+    - name: Create restart.txt for Passenger
+      run: |
+        mkdir -p tmp
+        touch tmp/restart.txt
+
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        # Exclude node_modules, .env, and frontend to save bandwidth
+        exclude: |
+          **/.git*
+          **/.git*/**
+          node_modules/**
+          .env
+          frontend/**
+          landing_page/**
+          README.md
+          docs/**

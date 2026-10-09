@@ -13,19 +13,22 @@
   "license": "ISC",
   "type": "commonjs",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
-    "dotenv": "^18.0.3",
-    "express": "^5.2.1",
-    "express-validator": "^7.3.2",
+    "dotenv": "^16.0.3",
+    "express": "4.17.3",
+    "express-validator": "^6.14.3",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.10.2",
+    "mongoose": "^6.10.0",
     "multer": "^2.4.0",
-    "nodemailer": "^10.0.10",
-    "socket.io": "^4.8.3"
+    "nodemailer": "^6.9.1",
+    "socket.io": "^4.6.1"
+  },
+  "overrides": {
+    "body-parser": "1.19.2"
   }
 }

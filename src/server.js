@@ -1,3 +1,30 @@
+const fs = require('fs');
+const logFile = __dirname + '/debug.log'; // Logging inside the src folder
+
+try {
+    fs.writeFileSync(logFile, '[' + new Date().toISOString() + '] Server init started. Node Version: ' + process.version + '\n');
+} catch (e) { }
+
+process.on('uncaughtException', (err) => {
+    try { fs.appendFileSync(logFile, 'Uncaught Exception: ' + (err && err.stack ? err.stack : err) + '\n'); } catch (e) { }
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    try { fs.appendFileSync(logFile, 'Unhandled Rejection: ' + reason + '\n'); } catch (e) { }
+});
+
+const origLog = console.log;
+const origErr = console.error;
+console.log = function (...args) {
+    try { fs.appendFileSync(logFile, 'LOG: ' + args.join(' ') + '\n'); } catch (e) { }
+    origLog.apply(console, args);
+};
+console.error = function (...args) {
+    try { fs.appendFileSync(logFile, 'ERROR: ' + args.join(' ') + '\n'); } catch (e) { }
+    origErr.apply(console, args);
+};
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -24,7 +51,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/showoff', showOffRoutes);
-app.get("/", (req, res) => {
+app.get(["/", "/showoff", "/showoff/"], (req, res) => {
     res.send("Backend server is running");
 })
 
@@ -39,6 +66,6 @@ initSockets(server);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

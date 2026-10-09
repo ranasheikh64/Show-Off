@@ -16,9 +16,9 @@ module.exports = (io, socket) => {
 
     socket.on("fetch_chats", async (data, callback) => {
         try {
-            const page = data?.page || 1;
-            const limit = data?.limit || 20;
-            const searchQuery = data?.searchQuery || '';
+            const page = (data && data.page) ? data.page : 1;
+            const limit = (data && data.limit) ? data.limit : 20;
+            const searchQuery = (data && data.searchQuery) ? data.searchQuery : '';
             const result = await chatService.fetchUserChats(socket.user.id, page, limit, searchQuery);
             if (callback) callback({ success: true, chats: result.chats, hasMore: result.hasMore });
         } catch (error) {
