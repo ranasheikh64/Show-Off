@@ -58,7 +58,7 @@ app.use('/showoff/api', apiRouter);
 app.get(["/", "/showoff", "/showoff/"], (req, res) => {
     res.send("Show Off Backend server is running");
 });
-app.get("/api/debug-log", (req, res) => {
+app.get(["/api/debug-log", "/showoff/api/debug-log"], (req, res) => {
     try { res.sendFile(__dirname + '/debug.log'); } catch(e) { res.send(e.toString()); }
 });
 
