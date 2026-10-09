@@ -46,11 +46,11 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/chats', chatRoutes);
-app.use('/api/showoff', showOffRoutes);
+app.use('/showoff/api/auth', authRoutes);
+app.use('/showoff/api/upload', uploadRoutes);
+app.use('/showoff/api/users', userRoutes);
+app.use('/showoff/api/chats', chatRoutes);
+app.use('/showoff/api/showoff', showOffRoutes);
 app.get(["/", "/showoff", "/showoff/"], (req, res) => {
     res.send("Show Off Backend server is running");
 })
