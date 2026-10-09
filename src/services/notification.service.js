@@ -1,9 +1,23 @@
 const admin = require('firebase-admin');
 const User = require('../models/user.model');
-const serviceAccount = require('../../show-off-ba1be-firebase-adminsdk-fbsvc-969a4ba46f.json');
+let serviceAccount;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    try {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    } catch (e) {
+        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT from environment variables");
+    }
+} else {
+    try {
+        serviceAccount = require('../../show-off-ba1be-firebase-adminsdk-fbsvc-969a4ba46f.json');
+    } catch (e) {
+        console.warn("Firebase service account JSON not found. Push notifications will be disabled.");
+    }
+}
 
 // Initialize Firebase Admin
-if (!admin.apps.length) {
+if (serviceAccount && !admin.apps.length) {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });
@@ -18,6 +32,11 @@ if (!admin.apps.length) {
  */
 const sendPushNotification = async (userId, title, body, data = {}) => {
     try {
+        if (!admin.apps.length) {
+            console.log('Firebase Admin is not initialized.');
+            return false;
+        }
+
         const user = await User.findById(userId);
         if (!user || !user.fcmToken) {
             console.log(`User ${userId} does not have an FCM token.`);
