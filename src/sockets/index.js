@@ -56,8 +56,8 @@ const User = require('../models/user.model');
         registerChatHandlers(io, socket);
         registerMessageHandlers(io, socket);
 
-        socket.on("disconnect", async () => {
-            console.log(`User disconnected: ${socket.user.id}`);
+        socket.on("disconnect", async (reason) => {
+            console.log(`User disconnected: ${socket.user.id}, Reason: ${reason}`);
             await User.findByIdAndUpdate(socket.user.id, { isOnline: false, lastActive: new Date() });
             io.emit("user_status_changed", { userId: socket.user.id, isOnline: false, lastActive: new Date().toISOString() });
         });
