@@ -51,7 +51,7 @@ const discoverUsers = async (currentUserId, query) => {
 };
 
 const updateProfile = async (userId, updateData) => {
-    const allowedFields = ['name', 'gender', 'age', 'passion', 'location', 'profileImage', 'education', 'petLover', 'preferences', 'fcmToken', 'hasAcceptedPrivacyPolicy'];
+    const allowedFields = ['name', 'gender', 'age', 'passion', 'location', 'profileImage', 'education', 'petLover', 'preferences', 'fcmToken', 'hasAcceptedPrivacyPolicy', 'notificationsEnabled'];
     const filteredData = {};
     
     Object.keys(updateData).forEach(key => {

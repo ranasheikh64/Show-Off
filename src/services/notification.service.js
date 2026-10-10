@@ -53,6 +53,11 @@ const sendPushNotification = async (userId, title, body, data = {}) => {
             return false;
         }
 
+        if (user.notificationsEnabled === false) {
+            console.log(`[Push Notification] Skipped: User ${userId} has notifications disabled.`);
+            return false;
+        }
+
         const message = {
             notification: {
                 title,
