@@ -41,6 +41,8 @@ const http = require('http');
 const app = express();
 const server = http.createServer(app);
 
+const musicRoutes = require('./routes/music.routes');
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -52,6 +54,7 @@ apiRouter.use('/upload', uploadRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/chats', chatRoutes);
 apiRouter.use('/showoff', showOffRoutes);
+apiRouter.use('/music', musicRoutes);
 apiRouter.get('/debug-log', (req, res) => {
     try { res.sendFile(__dirname + '/debug.log'); } catch(e) { res.send(e.toString()); }
 });
