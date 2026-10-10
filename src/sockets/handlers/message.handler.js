@@ -29,13 +29,21 @@ module.exports = (io, socket) => {
                         io.to(userId.toString()).emit("new_message_notification", message);
                         console.log(`[Socket] Emitted new_message_notification to user room: ${userId}`);
                         
-                        // Send Push Notification
-                        notificationService.sendPushNotification(
-                            userId.toString(),
-                            message.sender.name || 'New Message',
-                            'Sent a message 💬', // Do not show raw encrypted content in push notifications
-                            { type: 'CHAT', chatId: chatId.toString() }
-                        );
+                        // Check if the user is actively connected via socket
+                        const userRoom = io.sockets.adapter.rooms.get(userId.toString());
+                        const isUserOnline = userRoom && userRoom.size > 0;
+                        
+                        if (!isUserOnline) {
+                            // Send Push Notification ONLY if user is offline
+                            notificationService.sendPushNotification(
+                                userId.toString(),
+                                message.sender.name || 'New Message',
+                                'Sent a message 💬', // Do not show raw encrypted content in push notifications
+                                { type: 'CHAT', chatId: chatId.toString() }
+                            );
+                        } else {
+                            console.log(`[Socket] User ${userId} is online, skipping push notification.`);
+                        }
                     }
                 });
             }
