@@ -23,5 +23,17 @@ router.post('/:chatId/match-decision', protect, async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
+router.post('/group', protect, async (req, res) => {
+    try {
+        const { users, chatName } = req.body;
+        if (!users || !chatName) {
+            return res.status(400).json({ success: false, message: 'Users and chatName are required' });
+        }
+        const chat = await chatService.createGroupChat(req.user.id, users, chatName);
+        res.json({ success: true, chat });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 
 module.exports = router;
