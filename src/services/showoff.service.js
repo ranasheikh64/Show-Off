@@ -87,6 +87,7 @@ class ShowOffService {
 
     // Send push notification
     try {
+      console.log(`[ShowLove Event] User ${chooserId} showed love to User ${chosenId}. Triggering notification.`);
       const User = require('../models/user.model');
       const { sendPushNotification } = require('./notification.service');
       const chooser = await User.findById(chooserId);

@@ -384,6 +384,9 @@ const processMatchDecision = async (chatId, userId, decision) => {
         try {
             const { sendPushNotification } = require('./notification.service');
             const otherUserId = chat.users.find(u => u.toString() !== userId.toString());
+            
+            console.log(`[Match Event] User ${userId} accepted match for Chat ${chatId}. Triggering notification to User ${otherUserId}`);
+            
             if (otherUserId) {
                 const currentUser = await User.findById(userId);
                 if (currentUser) {

@@ -41,14 +41,15 @@ if (serviceAccount && getApps().length === 0) {
  */
 const sendPushNotification = async (userId, title, body, data = {}) => {
     try {
+        console.log(`[Push Notification] Initiating send to User: ${userId} | Title: "${title}"`);
         if (getApps().length === 0) {
-            console.log('Firebase Admin is not initialized.');
+            console.log('[Push Notification] Error: Firebase Admin is not initialized.');
             return false;
         }
 
         const user = await User.findById(userId);
         if (!user || !user.fcmToken) {
-            console.log(`User ${userId} does not have an FCM token.`);
+            console.log(`[Push Notification] Failed: User ${userId} does not have an FCM token.`);
             return false;
         }
 
@@ -65,10 +66,10 @@ const sendPushNotification = async (userId, title, body, data = {}) => {
         };
 
         const response = await getMessaging().send(message);
-        console.log('Successfully sent message:', response);
+        console.log(`[Push Notification] Success! Sent to User: ${userId} | Token: ${user.fcmToken.substring(0, 15)}... | Response:`, response);
         return true;
     } catch (error) {
-        console.error('Error sending push notification:', error);
+        console.error(`[Push Notification] Exception while sending to User ${userId}:`, error);
         return false;
     }
 };
