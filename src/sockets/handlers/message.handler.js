@@ -6,12 +6,15 @@ module.exports = (io, socket) => {
     
     socket.on("send_message", async (data, callback) => {
         try {
+            console.log(`[Socket] Received send_message from ${socket.user.id}:`, data);
             const { chatId, content, replyTo, duration } = data; // replyTo and duration are optional
             
             const { message, promptMatch } = await messageService.saveMessage(chatId, socket.user.id, content, replyTo, duration);
+            console.log(`[Socket] Message saved to DB. ID: ${message._id}`);
             
             // Emit to the specific chat room (for users who have the chat screen open)
             io.to(chatId).emit("new_message", message);
+            console.log(`[Socket] Emitted new_message to room: ${chatId}`);
             
             // Emit match prompt if thresholds are reached
             if (promptMatch) {
@@ -24,6 +27,7 @@ module.exports = (io, socket) => {
                 message.chat.users.forEach(userId => {
                     if (userId && userId.toString() !== socket.user.id) {
                         io.to(userId.toString()).emit("new_message_notification", message);
+                        console.log(`[Socket] Emitted new_message_notification to user room: ${userId}`);
                         
                         // Send Push Notification
                         notificationService.sendPushNotification(
@@ -38,6 +42,7 @@ module.exports = (io, socket) => {
             
             if (callback) callback({ success: true, message });
         } catch (error) {
+            console.error(`[Socket] Error in send_message: ${error.message}`);
             if (callback) callback({ success: false, message: error.message });
         }
     });
