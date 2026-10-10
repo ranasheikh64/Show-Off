@@ -29,7 +29,7 @@ module.exports = (io, socket) => {
                         notificationService.sendPushNotification(
                             userId.toString(),
                             message.sender.name || 'New Message',
-                            message.content || 'Sent an attachment',
+                            'Sent a message 💬', // Do not show raw encrypted content in push notifications
                             { type: 'CHAT', chatId: chatId.toString() }
                         );
                     }

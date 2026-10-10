@@ -51,17 +51,7 @@ class ShowOffController {
 
       const result = await showOffService.chooseUser(req.user.id, userId);
       
-      // Send Push Notification
-      if (!result.alreadyChosen) {
-          const sender = await User.findById(req.user.id).select('name');
-          const senderName = sender ? sender.name : 'Someone';
-          await notificationService.sendPushNotification(
-              userId,
-              'New Love! ❤️',
-              `${senderName} just showed love to you on Show Off!`,
-              { type: 'LOVE' }
-          );
-      }
+      // Push notification is handled by the showOffService.chooseUser directly
 
       res.status(200).json({ success: true, ...result });
     } catch (error) {
