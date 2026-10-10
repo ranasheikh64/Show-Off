@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema(
             enum: ['Yes', 'No', 'Sometimes'],
             default: 'No'
         },
+        hasAcceptedPrivacyPolicy: {
+            type: Boolean,
+            default: false
+        },
         preferences: {
             type: [String],
             default: []

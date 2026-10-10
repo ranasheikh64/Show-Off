@@ -45,7 +45,20 @@ const updateProfile = async (req, res) => {
     }
 };
 
-module.exports = { search, discover, updateProfile };
+const acceptPrivacyPolicy = async (req, res) => {
+    try {
+        const user = await userService.updateProfile(req.user.id, { hasAcceptedPrivacyPolicy: true });
+        res.status(200).json({
+            success: true,
+            message: 'Privacy policy accepted successfully',
+            user
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = { search, discover, updateProfile, acceptPrivacyPolicy };
 
 const getMyProfile = async (req, res) => {
     try {

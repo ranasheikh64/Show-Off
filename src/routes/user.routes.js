@@ -15,6 +15,9 @@ router.get('/me', protect, userController.getMyProfile);
 // Update user profile
 router.put('/profile', protect, userController.updateProfile);
 
+// Accept privacy policy
+router.put('/accept-privacy-policy', protect, userController.acceptPrivacyPolicy);
+
 // Update FCM Token
 router.put('/fcm-token', protect, userController.updateFcmToken);
 
