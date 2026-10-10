@@ -38,7 +38,7 @@ class MusicService {
       return this.accessToken;
     } catch (error) {
       console.error('[MusicService] Error fetching Spotify token:', error.response?.data || error.message);
-      throw new Error('Failed to authenticate with Spotify');
+      throw new Error(error.response?.data?.error || error.message || 'Failed to authenticate with Spotify');
     }
   }
 
@@ -76,7 +76,7 @@ class MusicService {
         
     } catch (error) {
       console.error('[MusicService] Error searching Spotify:', error.response?.data || error.message);
-      throw new Error('Failed to search music');
+      throw new Error(error.response?.data?.error?.message || error.message || 'Failed to search music');
     }
   }
 }
