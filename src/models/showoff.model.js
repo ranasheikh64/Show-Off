@@ -14,6 +14,18 @@ const showOffSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  musicUrl: {
+    type: String,
+    default: null
+  },
+  musicTitle: {
+    type: String,
+    default: null
+  },
+  musicArtist: {
+    type: String,
+    default: null
+  },
 }, {
   timestamps: true
 });

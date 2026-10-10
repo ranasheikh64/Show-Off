@@ -5,14 +5,14 @@ const User = require('../models/user.model');
 class ShowOffController {
   async createPost(req, res) {
     try {
-      const { images } = req.body;
+      const { images, musicUrl, musicTitle, musicArtist } = req.body;
       const userId = req.user.id; // assuming auth middleware sets req.user
 
       if (!images || !images.length) {
         return res.status(400).json({ success: false, message: 'Images are required' });
       }
 
-      const post = await showOffService.createPost(userId, images);
+      const post = await showOffService.createPost(userId, images, { musicUrl, musicTitle, musicArtist });
       res.status(201).json({ success: true, data: post });
     } catch (error) {
       res.status(500).json({ success: false, message: error.message });
@@ -63,14 +63,14 @@ class ShowOffController {
   async updatePost(req, res) {
     try {
       const { id } = req.params;
-      const { images } = req.body;
+      const { images, musicUrl, musicTitle, musicArtist } = req.body;
       const userId = req.user.id;
 
       if (!images || !images.length) {
         return res.status(400).json({ success: false, message: 'Images are required' });
       }
 
-      const post = await showOffService.updatePost(id, userId, images);
+      const post = await showOffService.updatePost(id, userId, images, { musicUrl, musicTitle, musicArtist });
       res.status(200).json({ success: true, data: post });
     } catch (error) {
       if (error.message.includes('not found')) {

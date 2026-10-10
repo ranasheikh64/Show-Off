@@ -2,10 +2,13 @@ const ShowOff = require('../models/showoff.model');
 const ShowOffChoice = require('../models/showoffChoice.model');
 
 class ShowOffService {
-  async createPost(userId, images) {
+  async createPost(userId, images, music = {}) {
     const post = new ShowOff({
       user: userId,
-      images: images
+      images: images,
+      musicUrl: music.musicUrl || null,
+      musicTitle: music.musicTitle || null,
+      musicArtist: music.musicArtist || null,
     });
     
     await post.save();
@@ -106,13 +109,17 @@ class ShowOffService {
     return { alreadyChosen: false };
   }
 
-  async updatePost(postId, userId, images) {
+  async updatePost(postId, userId, images, music = {}) {
     const post = await ShowOff.findOne({ _id: postId, user: userId });
     if (!post) {
       throw new Error('Post not found or unauthorized');
     }
     
     post.images = images;
+    if (music.musicUrl !== undefined) post.musicUrl = music.musicUrl;
+    if (music.musicTitle !== undefined) post.musicTitle = music.musicTitle;
+    if (music.musicArtist !== undefined) post.musicArtist = music.musicArtist;
+    
     await post.save();
     
     return await ShowOff.findById(post._id).populate('user', 'name phone profileImage isOnline age passion preferences');
