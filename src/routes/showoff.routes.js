@@ -8,5 +8,6 @@ router.get('/feed', protect, showOffController.getFeed);
 router.post('/choose', protect, showOffController.chooseUser);
 router.put('/:id', protect, showOffController.updatePost);
 router.delete('/:id', protect, showOffController.deletePost);
+router.post('/:id/report', protect, showOffController.reportPost);
 
 module.exports = router;

@@ -127,6 +127,38 @@ class ShowOffService {
     await ShowOff.deleteOne({ _id: postId });
     return true;
   }
+
+  async reportPost(postId, userId) {
+    const post = await ShowOff.findById(postId);
+    if (!post) {
+      throw new Error('Post not found');
+    }
+
+    if (post.user.toString() === userId) {
+      throw new Error('You cannot report your own post');
+    }
+
+    if (post.reportedBy && post.reportedBy.includes(userId)) {
+      throw new Error('You have already reported this post');
+    }
+
+    if (!post.reportedBy) {
+      post.reportedBy = [];
+    }
+    
+    post.reportedBy.push(userId);
+
+    if (post.reportedBy.length >= 5) {
+      // Suspend user and delete post
+      const User = require('../models/user.model');
+      await User.findByIdAndUpdate(post.user, { isBlocked: true });
+      await ShowOff.deleteOne({ _id: postId });
+      return { deleted: true, message: 'Post removed and user suspended due to multiple reports' };
+    }
+
+    await post.save();
+    return { deleted: false, message: 'Post reported successfully', reportCount: post.reportedBy.length };
+  }
 }
 
 module.exports = new ShowOffService();

@@ -94,6 +94,17 @@ class ShowOffController {
       res.status(500).json({ success: false, message: error.message });
     }
   }
+
+  async reportPost(req, res) {
+    try {
+      const { id } = req.params;
+      const result = await showOffService.reportPost(id, req.user.id);
+      res.status(200).json({ success: true, ...result });
+    } catch (error) {
+      const status = error.message.includes('already') || error.message.includes('own') ? 400 : 500;
+      res.status(status).json({ success: false, message: error.message });
+    }
+  }
 }
 
 module.exports = new ShowOffController();
