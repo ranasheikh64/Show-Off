@@ -104,3 +104,11 @@ const getProfileWithStats = async (userId) => {
 };
 
 module.exports.getProfileWithStats = getProfileWithStats;
+
+const deleteAccount = async (userId) => {
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) throw new Error('User not found');
+    return deletedUser;
+};
+
+module.exports.deleteAccount = deleteAccount;

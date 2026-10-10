@@ -18,4 +18,7 @@ router.put('/profile', protect, userController.updateProfile);
 // Update FCM Token
 router.put('/fcm-token', protect, userController.updateFcmToken);
 
+// Delete user account
+router.delete('/me', protect, userController.deleteAccount);
+
 module.exports = router;

@@ -74,3 +74,14 @@ const updateFcmToken = async (req, res) => {
 
 module.exports.getMyProfile = getMyProfile;
 module.exports.updateFcmToken = updateFcmToken;
+
+const deleteAccount = async (req, res) => {
+    try {
+        await userService.deleteAccount(req.user.id);
+        res.status(200).json({ success: true, message: 'Account deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+module.exports.deleteAccount = deleteAccount;
