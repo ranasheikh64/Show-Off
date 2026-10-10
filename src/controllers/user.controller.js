@@ -85,3 +85,33 @@ const deleteAccount = async (req, res) => {
 };
 
 module.exports.deleteAccount = deleteAccount;
+
+const testNotification = async (req, res) => {
+    try {
+        const { fcmToken, title, body } = req.body;
+        if (!fcmToken) {
+            return res.status(400).json({ success: false, message: 'fcmToken is required' });
+        }
+
+        const { getMessaging } = require('firebase-admin/messaging');
+        
+        const message = {
+            notification: {
+                title: title || 'Test Notification',
+                body: body || 'This is a test push notification from the backend.'
+            },
+            data: {
+                type: 'test',
+                click_action: 'FLUTTER_NOTIFICATION_CLICK'
+            },
+            token: fcmToken
+        };
+
+        const response = await getMessaging().send(message);
+        res.status(200).json({ success: true, message: 'Notification sent successfully', response });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports.testNotification = testNotification;
