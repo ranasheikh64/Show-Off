@@ -6,11 +6,19 @@ class MusicService {
     this.clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
     this.accessToken = null;
     this.tokenExpiration = null;
+    console.log('[MusicService] Initialized with Client ID:', this.clientId ? 'Set' : 'Missing', 'Client Secret:', this.clientSecret ? 'Set' : 'Missing');
   }
 
   async getAccessToken() {
+    console.log('[MusicService] Requesting access token...');
     if (this.accessToken && this.tokenExpiration && Date.now() < this.tokenExpiration) {
+      console.log('[MusicService] Returning cached token.');
       return this.accessToken;
+    }
+
+    if (!this.clientId || !this.clientSecret) {
+      console.error('[MusicService] Error: Missing Spotify credentials in .env');
+      throw new Error('Missing Spotify credentials');
     }
 
     const credentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
@@ -26,19 +34,21 @@ class MusicService {
       this.accessToken = response.data.access_token;
       this.tokenExpiration = Date.now() + (response.data.expires_in * 1000) - 300000;
       
+      console.log('[MusicService] Token successfully acquired!');
       return this.accessToken;
     } catch (error) {
-      console.error('Error fetching Spotify token:', error.response?.data || error.message);
+      console.error('[MusicService] Error fetching Spotify token:', error.response?.data || error.message);
       throw new Error('Failed to authenticate with Spotify');
     }
   }
 
   async searchMusic(query) {
+    console.log(`[MusicService] Searching music for query: "${query}"`);
     if (!query) return [];
     
-    const token = await this.getAccessToken();
-    
     try {
+      const token = await this.getAccessToken();
+      console.log(`[MusicService] Calling Spotify Search API...`);
       const response = await axios.get(`https://api.spotify.com/v1/search`, {
         params: {
           q: query,
@@ -50,7 +60,8 @@ class MusicService {
         }
       });
 
-      return response.data.tracks.items
+      console.log(`[MusicService] Spotify API returned ${response.data.tracks.items.length} tracks.`);
+      const mappedTracks = response.data.tracks.items
         .filter(track => track.preview_url)
         .map(track => ({
           id: track.id,
@@ -60,9 +71,11 @@ class MusicService {
           coverImage: track.album.images[0]?.url || null,
           duration: track.duration_ms
         }));
+      console.log(`[MusicService] Filtered down to ${mappedTracks.length} tracks with preview URLs.`);
+      return mappedTracks;
         
     } catch (error) {
-      console.error('Error searching Spotify:', error.response?.data || error.message);
+      console.error('[MusicService] Error searching Spotify:', error.response?.data || error.message);
       throw new Error('Failed to search music');
     }
   }
