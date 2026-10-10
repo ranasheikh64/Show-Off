@@ -84,6 +84,24 @@ class ShowOffService {
     if (existing) return { alreadyChosen: true };
 
     await ShowOffChoice.create({ chooser: chooserId, chosen: chosenId });
+
+    // Send push notification
+    try {
+      const User = require('../models/user.model');
+      const { sendPushNotification } = require('./notification.service');
+      const chooser = await User.findById(chooserId);
+      if (chooser) {
+        await sendPushNotification(
+          chosenId,
+          "New Love Received ❤️",
+          `${chooser.name || 'Someone'} showed you love on your post!`,
+          { type: 'love', chooserId: chooserId.toString() }
+        );
+      }
+    } catch (e) {
+      console.error('Failed to send love push notification', e);
+    }
+
     return { alreadyChosen: false };
   }
 

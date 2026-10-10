@@ -379,6 +379,25 @@ const processMatchDecision = async (chatId, userId, decision) => {
 
     if (decision === 'match') {
         chat.matchStatus = 'matched';
+        
+        // Send push notification to the other user
+        try {
+            const { sendPushNotification } = require('./notification.service');
+            const otherUserId = chat.users.find(u => u.toString() !== userId.toString());
+            if (otherUserId) {
+                const currentUser = await User.findById(userId);
+                if (currentUser) {
+                    await sendPushNotification(
+                        otherUserId.toString(),
+                        "It's a Match! 🎉",
+                        `${currentUser.name || 'Someone'} matched with you! Send a message now.`,
+                        { type: 'match', chatId: chat._id.toString() }
+                    );
+                }
+            }
+        } catch (e) {
+            console.error('Failed to send match push notification', e);
+        }
     } else if (decision === 'unmatch') {
         chat.matchStatus = 'unmatched';
     } else if (decision === 'not_now') {
