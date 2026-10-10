@@ -201,8 +201,20 @@ const fetchUserChats = async (userId, page = 1, limit = 20, searchQuery = '') =>
     
     const total = await Chat.countDocuments(query);
     
+    // Add unreadCount
+    const Message = require('../models/message.model');
+    const formattedChats = formatChatsForUser(chats, userId, userPinnedChats);
+    for (let chatObj of formattedChats) {
+        const unreadCount = await Message.countDocuments({
+            chat: chatObj._id,
+            sender: { $ne: userId },
+            readBy: { $ne: userId }
+        });
+        chatObj.unreadCount = unreadCount;
+    }
+
     return {
-        chats: formatChatsForUser(chats, userId, userPinnedChats),
+        chats: formattedChats,
         hasMore: skip + chats.length < total
     };
 };
