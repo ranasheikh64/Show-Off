@@ -8,7 +8,9 @@ class MusicService {
    * @returns {Promise<Array>}
    */
   async searchMusic(query) {
-    if (!query || !query.trim()) return [];
+    if (!query || !query.trim()) {
+      return await this._getChartTracks();
+    }
 
     const trimmedQuery = query.trim();
 
@@ -24,6 +26,30 @@ class MusicService {
       }
     }
   }
+
+  async _getChartTracks() {
+    try {
+      const response = await axios.get('https://api.deezer.com/chart/0/tracks', {
+        params: { limit: 25 },
+        timeout: 8000
+      });
+      const items = response.data?.data || [];
+      return items
+        .filter((track) => track.preview)
+        .map((track) => ({
+          id: String(track.id),
+          title: track.title,
+          artist: track.artist?.name || 'Unknown Artist',
+          previewUrl: track.preview,
+          coverImage: track.album?.cover_medium || track.album?.cover || null,
+          duration: track.duration ? track.duration * 1000 : null
+        }));
+    } catch (error) {
+      console.warn('[MusicService] Chart tracks failed, falling back to top hits:', error.message);
+      return await this._searchITunes('top hits');
+    }
+  }
+
 
   async _searchDeezer(query) {
     const response = await axios.get('https://api.deezer.com/search', {
