@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const registerChatHandlers = require('./handlers/chat.handler');
 const registerMessageHandlers = require('./handlers/message.handler');
+const registerCallHandlers = require('./handlers/call.handler');
 
 const initSockets = (server) => {
     const io = socketIo(server, {
@@ -55,6 +56,7 @@ const User = require('../models/user.model');
         // Register handlers
         registerChatHandlers(io, socket);
         registerMessageHandlers(io, socket);
+        registerCallHandlers(io, socket);
 
         socket.on("disconnect", async (reason) => {
             console.log(`User disconnected: ${socket.user.id}, Reason: ${reason}`);
