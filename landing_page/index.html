@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Off - Connect, Share, Express</title>
+    <title>Show Off - Connect, Share, Audio & Video Call</title>
+    <meta name="description" content="Show Off is the ultimate social platform featuring real-time WebRTC HD Audio & Video Calling, Spotify music integration, interactive feed, and encrypted private chat.">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -17,20 +18,30 @@
         </div>
         <ul class="nav-links">
             <li><a href="#features">Features</a></li>
+            <li><a href="#calling">WebRTC Calls <span class="nav-pill">HOT</span></a></li>
+            <li><a href="#music">Music Beats</a></li>
             <li><a href="#showcase">Showcase</a></li>
             <li><a href="#security">Security</a></li>
         </ul>
-        <a href="https://github.com/ranasheikh64/Show-Off/releases/download/V1.0.0/Show.Off.apk" class="nav-btn" download style="display: inline-block; text-align: center;">Download Now</a>
+        <a href="https://github.com/ranasheikh64/Show-Off/releases/download/V1.0.0/Show.Off.apk" class="nav-btn" download style="display: inline-block; text-align: center;">Download APK</a>
     </nav>
 
     <!-- Hero Section -->
     <header class="hero">
         <div class="hero-content fade-in-up">
-            <h1 class="gradient-text">Show your best self & find your match</h1>
-            <p>The ultimate platform to express yourself, connect with others, and chat securely with full privacy control.</p>
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>NEW: 1-to-1 WebRTC HD Video & Audio Calling is Live!</span>
+            </div>
+            <h1 class="gradient-text">Show your best self & connect in real-time</h1>
+            <p>The next-generation social platform to express your lifestyle, discover trending music, chat securely, and connect through crystal-clear WebRTC audio & video calls.</p>
             <div class="hero-buttons">
-                <a href="https://github.com/ranasheikh64/Show-Off/releases/download/V1.0.0/Show.Off.apk" class="btn-primary" download style="display: inline-block; text-align: center; line-height: normal;">Get Started</a>
-                <button class="btn-secondary"><i class="fa-solid fa-play"></i> Watch Demo</button>
+                <a href="https://github.com/ranasheikh64/Show-Off/releases/download/V1.0.0/Show.Off.apk" class="btn-primary" download style="display: inline-block; text-align: center; line-height: normal;">
+                    <i class="fa-solid fa-download"></i> Download App
+                </a>
+                <a href="#calling" class="btn-secondary">
+                    <i class="fa-solid fa-phone-volume"></i> Explore Calling
+                </a>
             </div>
         </div>
         <div class="hero-image-wrapper floating">
@@ -40,27 +51,174 @@
 
     <!-- Features Section -->
     <section id="features" class="features">
-        <h2 class="section-title fade-in-up">Everything you need to <span class="gradient-text">Connect</span></h2>
+        <h2 class="section-title fade-in-up">Everything you need to <span class="gradient-text">Connect & Vibe</span></h2>
         <div class="feature-grid">
-            <div class="feature-card fade-in-up" style="animation-delay: 0.1s;">
-                <div class="icon-box"><i class="fa-solid fa-camera-retro"></i></div>
-                <h3>Showoff Feed</h3>
-                <p>Scroll through a beautiful, immersive feed. Choose your favorite profiles and interact seamlessly.</p>
+            <div class="feature-card highlight-card fade-in-up" style="animation-delay: 0.05s;">
+                <div class="icon-box call-icon"><i class="fa-solid fa-video"></i></div>
+                <div class="feature-tag">NEW FEATURE</div>
+                <h3>HD Audio & Video Calls</h3>
+                <p>Peer-to-peer WebRTC powered calling. Switch front/rear camera, toggle mute, and route sound through speaker or earpiece with zero latency.</p>
+            </div>
+            <div class="feature-card highlight-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="icon-box alert-icon"><i class="fa-solid fa-bell"></i></div>
+                <div class="feature-tag">SMART NOTIFICATIONS</div>
+                <h3>Heads-Up Call Banner</h3>
+                <p>Full-width crimson banner with instant Accept and Decline actions. Receive wake-up push alerts even when the app is killed or locked.</p>
+            </div>
+            <div class="feature-card highlight-card fade-in-up" style="animation-delay: 0.15s;">
+                <div class="icon-box music-icon"><i class="fa-solid fa-music"></i></div>
+                <div class="feature-tag">SPOTIFY INTEGRATED</div>
+                <h3>Soundtracks & Music</h3>
+                <p>Search and attach your favorite soundtracks directly to ShowOff moments. Let friends listen to your vibe right in the feed.</p>
             </div>
             <div class="feature-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="icon-box"><i class="fa-solid fa-camera-retro"></i></div>
+                <h3>Showoff Feed</h3>
+                <p>Scroll through a beautiful, immersive feed. Choose your favorite profiles and interact seamlessly with modern card interactions.</p>
+            </div>
+            <div class="feature-card fade-in-up" style="animation-delay: 0.25s;">
                 <div class="icon-box"><i class="fa-solid fa-microphone-lines"></i></div>
                 <h3>Rich Media Chat</h3>
-                <p>Send voice notes, images, and emojis instantly with our real-time chat architecture.</p>
+                <p>Send voice notes, images, and emojis instantly with our real-time Socket.io chat architecture and typing indicators.</p>
             </div>
             <div class="feature-card fade-in-up" style="animation-delay: 0.3s;">
                 <div class="icon-box"><i class="fa-solid fa-thumbtack"></i></div>
                 <h3>Pin & Organize</h3>
-                <p>Pin important chats to the top or pin specific messages within a conversation so you never lose track.</p>
+                <p>Pin important chats to the top or pin specific messages within a conversation so you never lose track of important moments.</p>
             </div>
-            <div class="feature-card fade-in-up" style="animation-delay: 0.4s;">
-                <div class="icon-box"><i class="fa-solid fa-sliders"></i></div>
-                <h3>Advanced Filtering</h3>
-                <p>Find exactly who you are looking for with our powerful filtering system based on age, gender, passions, and preferences.</p>
+        </div>
+    </section>
+
+    <!-- Dedicated Calling Spotlight Section -->
+    <section id="calling" class="calling-spotlight">
+        <div class="calling-container">
+            <div class="calling-text fade-in-left">
+                <span class="spotlight-badge"><i class="fa-solid fa-bolt"></i> WEBRTC TECHNOLOGY</span>
+                <h2 class="section-title text-left">Crystal-Clear <span class="gradient-text">1-to-1 Calls</span> Anytime</h2>
+                <p class="spotlight-desc">Talk face-to-face with seamless WebRTC audio and video streaming. Engineered for blazing fast peer connections with minimal data consumption and studio-grade clarity.</p>
+
+                <div class="calling-points">
+                    <div class="point-item">
+                        <div class="point-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+                        <div>
+                            <h4>Ultra-Low Latency Streaming</h4>
+                            <p>Direct peer-to-peer data transport ensures natural, real-time conversation without annoying delays.</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-icon"><i class="fa-solid fa-bell-concierge"></i></div>
+                        <div>
+                            <h4>Top Incoming Call Banner & Actions</h4>
+                            <p>Instant crimson banner with one-tap Accept & Decline buttons right from heads-up notifications or app top bar.</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-icon"><i class="fa-solid fa-camera-rotate"></i></div>
+                        <div>
+                            <h4>Fluid In-Call Controls</h4>
+                            <p>Instant camera flipping, microphone mute toggle, speakerphone switching, and picture-in-picture local preview.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Calling Interactive Mockup -->
+            <div class="calling-mockup-wrapper fade-in-right">
+                <!-- Top Notification Banner Mockup -->
+                <div class="mockup-banner">
+                    <div class="banner-avatar">
+                        <img src="logo.png" alt="Caller">
+                        <span class="banner-pulse-dot"></span>
+                    </div>
+                    <div class="banner-info">
+                        <div class="banner-title">Incoming Video Call</div>
+                        <div class="banner-sub">Rana Sheikh is calling you...</div>
+                    </div>
+                    <div class="banner-actions">
+                        <button class="banner-btn decline-btn" title="Decline"><i class="fa-solid fa-phone-slash"></i></button>
+                        <button class="banner-btn accept-btn" title="Accept"><i class="fa-solid fa-phone"></i></button>
+                    </div>
+                </div>
+
+                <!-- Call Screen Window Mockup -->
+                <div class="mockup-call-screen">
+                    <div class="call-screen-header">
+                        <span class="call-badge-live"><span class="badge-dot-live"></span> 02:45</span>
+                        <span class="call-quality"><i class="fa-solid fa-signal"></i> HD</span>
+                    </div>
+                    
+                    <div class="call-avatar-wrapper">
+                        <div class="ripple ripple-1"></div>
+                        <div class="ripple ripple-2"></div>
+                        <div class="call-center-avatar">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                    </div>
+
+                    <div class="call-user-name">Sarah Jenkins</div>
+                    <div class="call-status-label">Connected • Peer-to-Peer Encrypted</div>
+
+                    <!-- Floating Mini PiP Window -->
+                    <div class="call-pip-view">
+                        <div class="pip-inner">
+                            <i class="fa-solid fa-video"></i>
+                            <span>You</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Call Controls -->
+                    <div class="call-control-bar">
+                        <div class="control-btn" title="Toggle Mic"><i class="fa-solid fa-microphone"></i></div>
+                        <div class="control-btn" title="Switch Camera"><i class="fa-solid fa-camera-rotate"></i></div>
+                        <div class="control-btn" title="Toggle Speaker"><i class="fa-solid fa-volume-high"></i></div>
+                        <div class="control-btn hangup-btn" title="End Call"><i class="fa-solid fa-phone-slash"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Music Beats Section -->
+    <section id="music" class="music-section">
+        <div class="music-container">
+            <div class="music-card-wrapper fade-in-left">
+                <div class="music-player-card">
+                    <div class="music-player-top">
+                        <span class="spotify-tag"><i class="fa-brands fa-spotify"></i> Spotify Audio</span>
+                        <div class="sound-wave">
+                            <span class="bar bar-1"></span>
+                            <span class="bar bar-2"></span>
+                            <span class="bar bar-3"></span>
+                            <span class="bar bar-4"></span>
+                            <span class="bar bar-5"></span>
+                        </div>
+                    </div>
+                    <div class="track-info">
+                        <div class="album-art"><i class="fa-solid fa-compact-disc spin-slow"></i></div>
+                        <div>
+                            <h3>Blinding Lights</h3>
+                            <p>The Weeknd • After Hours</p>
+                        </div>
+                    </div>
+                    <div class="track-progress">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="track-meta">
+                        <span>01:14</span>
+                        <span>03:20</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="music-text fade-in-right">
+                <span class="spotlight-badge"><i class="fa-solid fa-headphones"></i> SOUNDTRACKS & VIBES</span>
+                <h2 class="section-title text-left">Soundtrack Your Life With <span class="gradient-text">Music</span></h2>
+                <p class="spotlight-desc">Attach your favorite music tracks directly to your ShowOff feed posts. Search millions of Spotify songs and share your true mood with the people you care about.</p>
+                <ul class="feature-list">
+                    <li><i class="fa-solid fa-check-circle"></i> Instant Spotify track search & audio previews</li>
+                    <li><i class="fa-solid fa-check-circle"></i> Integrated music player directly in feed posts</li>
+                    <li><i class="fa-solid fa-check-circle"></i> Discover new tracks recommended by your friends</li>
+                </ul>
             </div>
         </div>
     </section>
@@ -72,8 +230,8 @@
             <p>A completely tailored, premium user interface designed for smooth interactions and perfect aesthetic appeal. Create posts, manage your chats, and interact in a beautiful environment.</p>
             <ul class="feature-list">
                 <li><i class="fa-solid fa-check-circle"></i> Clean Login & Registration flow</li>
-                <li><i class="fa-solid fa-check-circle"></i> Intuitive Post Creation</li>
-                <li><i class="fa-solid fa-check-circle"></i> Fluid Chat Interface</li>
+                <li><i class="fa-solid fa-check-circle"></i> Intuitive Post Creation & Audio Preview</li>
+                <li><i class="fa-solid fa-check-circle"></i> Fluid Chat & WebRTC Calling Interface</li>
             </ul>
         </div>
         <div class="showcase-images fade-in-right">
@@ -87,38 +245,38 @@
     <section id="security" class="security">
         <div class="security-inner">
             <h2 class="fade-in-up">Ultimate <span class="gradient-text">Privacy & Security</span></h2>
-            <p class="fade-in-up">You are in full control of your conversations.</p>
+            <p class="fade-in-up">You are in full control of your conversations and profile safety.</p>
             
             <div class="sec-grid">
+                <div class="sec-item fade-in-up" style="animation-delay: 0.05s;">
+                    <i class="fa-solid fa-phone-shield"></i>
+                    <h4>P2P Encrypted Calls</h4>
+                    <p>WebRTC calls use direct DTLS-SRTP encryption to safeguard audio and video streams.</p>
+                </div>
                 <div class="sec-item fade-in-up" style="animation-delay: 0.1s;">
                     <i class="fa-solid fa-shield-halved"></i>
                     <h4>Encrypted Messaging</h4>
-                    <p>End-to-end encryption ensures your chats remain private.</p>
+                    <p>Real-time encrypted socket messages ensure your private chats remain strictly private.</p>
                 </div>
-                <div class="sec-item fade-in-up" style="animation-delay: 0.2s;">
+                <div class="sec-item fade-in-up" style="animation-delay: 0.15s;">
                     <i class="fa-solid fa-fire"></i>
                     <h4>Disappearing Messages</h4>
-                    <p>Set messages to vanish after being read.</p>
+                    <p>Set ephemeral messages to vanish automatically after being viewed.</p>
                 </div>
-                <div class="sec-item fade-in-up" style="animation-delay: 0.3s;">
+                <div class="sec-item fade-in-up" style="animation-delay: 0.2s;">
                     <i class="fa-solid fa-lock"></i>
                     <h4>Lock Chat</h4>
-                    <p>Secure specific conversations with biometric authentication.</p>
+                    <p>Secure specific conversations with biometric or passcode authentication.</p>
                 </div>
-                <div class="sec-item fade-in-up" style="animation-delay: 0.4s;">
-                    <i class="fa-solid fa-user-slash"></i>
-                    <h4>Block & Mute</h4>
-                    <p>Easily block unwanted users or mute noisy conversations.</p>
-                </div>
-                <div class="sec-item fade-in-up" style="animation-delay: 0.5s;">
+                <div class="sec-item fade-in-up" style="animation-delay: 0.25s;">
                     <i class="fa-solid fa-flag"></i>
                     <h4>Community Safety</h4>
-                    <p>Report inappropriate content. Accounts receiving 5 reports are automatically suspended and their posts are permanently removed.</p>
+                    <p>Report inappropriate content. Suspended accounts have their posts permanently removed.</p>
                 </div>
-                <div class="sec-item fade-in-up" style="animation-delay: 0.6s;">
+                <div class="sec-item fade-in-up" style="animation-delay: 0.3s;">
                     <i class="fa-solid fa-user-xmark"></i>
                     <h4>Account Deletion</h4>
-                    <p>Full control over your data. Permanently delete your account and associated data whenever you choose.</p>
+                    <p>Full control over your data. Permanently delete your account whenever you choose.</p>
                 </div>
             </div>
         </div>
@@ -127,8 +285,10 @@
     <!-- CTA Section -->
     <section class="cta">
         <h2 class="fade-in-up">Ready to Show Off?</h2>
-        <p class="fade-in-up">Join thousands of users today and find your perfect match.</p>
-        <a href="https://github.com/ranasheikh64/Show-Off/releases/download/V1.0.0/Show.Off.apk" class="btn-primary fade-in-up" download style="display: inline-block; text-align: center; line-height: normal;">Download App Now</a>
+        <p class="fade-in-up">Join thousands of users today. Chat, share music, and call with zero hassle.</p>
+        <a href="https://github.com/ranasheikh64/Show-Off/releases/download/V1.0.0/Show.Off.apk" class="btn-primary fade-in-up" download style="display: inline-block; text-align: center; line-height: normal;">
+            <i class="fa-solid fa-download"></i> Download App Now
+        </a>
     </section>
 
     <footer>
