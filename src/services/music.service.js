@@ -3,23 +3,29 @@ const axios = require('axios');
 class MusicService {
   /**
    * Search music tracks across Deezer with iTunes fallback.
-   * Both provide reliable 30-second audio previews without 403 API restrictions.
+   * Supports pagination using page and limit.
    * @param {string} query
+   * @param {number|string} page
+   * @param {number|string} limit
    * @returns {Promise<Array>}
    */
-  async searchMusic(query) {
+  async searchMusic(query, page = 1, limit = 20) {
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
+    const index = (pageNum - 1) * limitNum;
+
     if (!query || !query.trim()) {
-      return await this._getChartTracks();
+      return await this._getChartTracks(index, limitNum);
     }
 
     const trimmedQuery = query.trim();
 
     try {
-      return await this._searchDeezer(trimmedQuery);
+      return await this._searchDeezer(trimmedQuery, index, limitNum);
     } catch (deezerError) {
       console.warn('[MusicService] Deezer failed, falling back to iTunes:', deezerError.message);
       try {
-        return await this._searchITunes(trimmedQuery);
+        return await this._searchITunes(trimmedQuery, index, limitNum);
       } catch (itunesError) {
         console.error('[MusicService] Both Deezer and iTunes search failed:', itunesError.message);
         throw new Error('Failed to search music from audio providers');
@@ -27,10 +33,10 @@ class MusicService {
     }
   }
 
-  async _getChartTracks() {
+  async _getChartTracks(index = 0, limit = 20) {
     try {
       const response = await axios.get('https://api.deezer.com/chart/0/tracks', {
-        params: { limit: 25 },
+        params: { index, limit },
         timeout: 8000
       });
       const items = response.data?.data || [];
@@ -46,14 +52,13 @@ class MusicService {
         }));
     } catch (error) {
       console.warn('[MusicService] Chart tracks failed, falling back to top hits:', error.message);
-      return await this._searchITunes('top hits');
+      return await this._searchITunes('top hits', index, limit);
     }
   }
 
-
-  async _searchDeezer(query) {
+  async _searchDeezer(query, index = 0, limit = 20) {
     const response = await axios.get('https://api.deezer.com/search', {
-      params: { q: query, limit: 25 },
+      params: { q: query, index, limit },
       timeout: 8000
     });
 
@@ -70,9 +75,9 @@ class MusicService {
       }));
   }
 
-  async _searchITunes(query) {
+  async _searchITunes(query, index = 0, limit = 20) {
     const response = await axios.get('https://itunes.apple.com/search', {
-      params: { term: query, media: 'music', limit: 25 },
+      params: { term: query, media: 'music', offset: index, limit },
       timeout: 8000
     });
 
@@ -93,4 +98,5 @@ class MusicService {
 }
 
 module.exports = new MusicService();
+
 
