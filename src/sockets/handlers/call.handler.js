@@ -7,13 +7,25 @@ module.exports = (io, socket) => {
     socket.on('call_user', async (data, callback) => {
         try {
             const { receiverId, callType = 'video', offer, callerInfo } = data;
+            console.log(`\n📞 [CALL_USER] Caller: ${currentUserId} (${callerInfo?.name}) -> Receiver: ${receiverId} [Type: ${callType}]`);
+
             if (!receiverId || !offer) {
+                console.log(`❌ [CALL_USER] Missing receiverId or offer`);
                 if (callback) callback({ success: false, message: 'Receiver ID and Offer SDP are required' });
                 return;
             }
 
+            // Check if receiver socket room exists
+            const receiverRoom = io.sockets.adapter.rooms.get(receiverId);
+            const clientCount = receiverRoom ? receiverRoom.size : 0;
+            console.log(`📡 [CALL_USER] Active sockets in receiver's room (${receiverId}): ${clientCount}`);
+            if (clientCount === 0) {
+                console.log(`⚠️ [CALL_USER] Receiver ${receiverId} is NOT currently online/connected to Socket!`);
+            }
+
             // Check if receiver is already busy
             if (activeCalls.has(receiverId)) {
+                console.log(`⚠️ [CALL_USER] Receiver ${receiverId} is already busy on another call.`);
                 if (callback) callback({ success: false, isBusy: true, message: 'User is busy on another call' });
                 return;
             }
@@ -27,6 +39,7 @@ module.exports = (io, socket) => {
                 callType,
                 offer
             });
+            console.log(`✅ [CALL_USER] 'incoming_call' event emitted to room: ${receiverId}`);
 
             if (callback) callback({ success: true });
         } catch (error) {
@@ -39,6 +52,7 @@ module.exports = (io, socket) => {
     socket.on('answer_call', (data, callback) => {
         try {
             const { callerId, answer } = data;
+            console.log(`\n📞 [ANSWER_CALL] Receiver: ${currentUserId} -> Caller: ${callerId}`);
             if (!callerId || !answer) {
                 if (callback) callback({ success: false, message: 'Caller ID and Answer SDP are required' });
                 return;
@@ -53,6 +67,7 @@ module.exports = (io, socket) => {
                 receiverId: currentUserId,
                 answer
             });
+            console.log(`✅ [ANSWER_CALL] 'call_accepted' event emitted to caller: ${callerId}`);
 
             if (callback) callback({ success: true });
         } catch (error) {
@@ -65,6 +80,7 @@ module.exports = (io, socket) => {
     socket.on('ice_candidate', (data) => {
         const { targetId, candidate } = data;
         if (!targetId || !candidate) return;
+        console.log(`❄️ [ICE_CANDIDATE] Forwarding candidate from ${currentUserId} to ${targetId}`);
 
         io.to(targetId).emit('receive_ice_candidate', {
             senderId: currentUserId,
@@ -75,6 +91,7 @@ module.exports = (io, socket) => {
     // 4. Reject Call
     socket.on('reject_call', (data) => {
         const { callerId, reason } = data;
+        console.log(`❌ [REJECT_CALL] Call rejected by ${currentUserId} for caller ${callerId}. Reason: ${reason}`);
         activeCalls.delete(currentUserId);
         if (callerId) {
             activeCalls.delete(callerId);
@@ -88,6 +105,7 @@ module.exports = (io, socket) => {
     // 5. End Call
     socket.on('end_call', (data) => {
         const { targetId } = data;
+        console.log(`🛑 [END_CALL] Call terminated by ${currentUserId} for peer ${targetId}`);
         activeCalls.delete(currentUserId);
         if (targetId) {
             activeCalls.delete(targetId);
