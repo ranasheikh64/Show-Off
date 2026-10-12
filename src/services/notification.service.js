@@ -100,10 +100,6 @@ const sendCallPushNotification = async (userId, callData) => {
         const body = `${callData.callerName || 'Someone'} is calling you...`;
 
         const message = {
-            notification: {
-                title,
-                body
-            },
             data: {
                 type: 'CALL_INCOMING',
                 callerId: String(callData.callerId || ''),
@@ -111,6 +107,8 @@ const sendCallPushNotification = async (userId, callData) => {
                 callerAvatar: String(callData.callerAvatar || ''),
                 callType: String(callData.callType || 'video'),
                 offer: typeof callData.offer === 'object' ? JSON.stringify(callData.offer) : String(callData.offer || ''),
+                title: String(title),
+                body: String(body),
                 click_action: 'FLUTTER_NOTIFICATION_CLICK'
             },
             android: {
