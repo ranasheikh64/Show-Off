@@ -12,26 +12,22 @@ class MusicService {
   async searchMusic(query, page = 1, limit = 20) {
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
-    const index = (pageNum - 1) * limitNum;
-
-    if (!query || !query.trim()) {
-      return await this._getChartTracks(index, limitNum);
-    }
-
-    const trimmedQuery = query.trim();
+    const offset = (pageNum - 1) * limitNum;
+    const term = query && query.trim() ? query.trim() : 'top hits';
 
     try {
-      return await this._searchDeezer(trimmedQuery, index, limitNum);
-    } catch (deezerError) {
-      console.warn('[MusicService] Deezer failed, falling back to iTunes:', deezerError.message);
+      return await this._searchITunes(term, offset, limitNum);
+    } catch (itunesError) {
+      console.warn('[MusicService] iTunes failed, falling back to Deezer:', itunesError.message);
       try {
-        return await this._searchITunes(trimmedQuery, index, limitNum);
-      } catch (itunesError) {
-        console.error('[MusicService] Both Deezer and iTunes search failed:', itunesError.message);
+        return await this._searchDeezer(term, offset, limitNum);
+      } catch (deezerError) {
+        console.error('[MusicService] Both iTunes and Deezer failed:', deezerError.message);
         throw new Error('Failed to search music from audio providers');
       }
     }
   }
+
 
   async _getChartTracks(index = 0, limit = 20) {
     try {
