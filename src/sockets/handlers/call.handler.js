@@ -1,3 +1,4 @@
+const { sendCallPushNotification } = require('../../services/notification.service');
 const activeCalls = new Map(); // userId -> { peerId, callType, status }
 
 module.exports = (io, socket) => {
@@ -20,7 +21,14 @@ module.exports = (io, socket) => {
             const clientCount = receiverRoom ? receiverRoom.size : 0;
             console.log(`📡 [CALL_USER] Active sockets in receiver's room (${receiverId}): ${clientCount}`);
             if (clientCount === 0) {
-                console.log(`⚠️ [CALL_USER] Receiver ${receiverId} is NOT currently online/connected to Socket!`);
+                console.log(`⚠️ [CALL_USER] Receiver ${receiverId} is NOT currently online/connected to Socket! Sending FCM push...`);
+                sendCallPushNotification(receiverId, {
+                    callerId: currentUserId,
+                    callerName: callerInfo?.name || socket.user?.name || 'Someone',
+                    callerAvatar: callerInfo?.avatar || socket.user?.profileImage || null,
+                    callType,
+                    offer
+                });
             }
 
             // Check if receiver is already busy

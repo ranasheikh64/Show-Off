@@ -79,6 +79,62 @@ const sendPushNotification = async (userId, title, body, data = {}) => {
     }
 };
 
+/**
+ * Send High Priority Call Push Notification
+ */
+const sendCallPushNotification = async (userId, callData) => {
+    try {
+        console.log(`[Call Push Notification] Initiating for User: ${userId}`);
+        if (getApps().length === 0) {
+            console.log('[Call Push Notification] Firebase Admin not initialized.');
+            return false;
+        }
+
+        const user = await User.findById(userId);
+        if (!user || !user.fcmToken) {
+            console.log(`[Call Push Notification] User ${userId} has no FCM token.`);
+            return false;
+        }
+
+        const title = callData.callType === 'audio' ? 'Incoming Audio Call' : 'Incoming Video Call';
+        const body = `${callData.callerName || 'Someone'} is calling you...`;
+
+        const message = {
+            notification: {
+                title,
+                body
+            },
+            data: {
+                type: 'CALL_INCOMING',
+                callerId: String(callData.callerId || ''),
+                callerName: String(callData.callerName || ''),
+                callerAvatar: String(callData.callerAvatar || ''),
+                callType: String(callData.callType || 'video'),
+                offer: typeof callData.offer === 'object' ? JSON.stringify(callData.offer) : String(callData.offer || ''),
+                click_action: 'FLUTTER_NOTIFICATION_CLICK'
+            },
+            android: {
+                priority: 'high',
+                ttl: 30000 // 30 seconds expiration
+            },
+            apns: {
+                headers: {
+                    'apns-priority': '10'
+                }
+            },
+            token: user.fcmToken
+        };
+
+        const response = await getMessaging().send(message);
+        console.log(`✅ [Call Push Notification] Sent to User: ${userId} | Response:`, response);
+        return true;
+    } catch (error) {
+        console.error(`❌ [Call Push Notification] Failed for User ${userId}:`, error);
+        return false;
+    }
+};
+
 module.exports = {
-    sendPushNotification
+    sendPushNotification,
+    sendCallPushNotification
 };
