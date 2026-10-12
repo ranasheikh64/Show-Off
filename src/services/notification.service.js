@@ -67,6 +67,13 @@ const sendPushNotification = async (userId, title, body, data = {}) => {
                 ...data,
                 click_action: 'FLUTTER_NOTIFICATION_CLICK'
             },
+            android: {
+                priority: 'high',
+                notification: {
+                    channelId: 'high_importance_channel',
+                    priority: 'high'
+                }
+            },
             token: user.fcmToken
         };
 
@@ -100,6 +107,10 @@ const sendCallPushNotification = async (userId, callData) => {
         const body = `${callData.callerName || 'Someone'} is calling you...`;
 
         const message = {
+            notification: {
+                title,
+                body
+            },
             data: {
                 type: 'CALL_INCOMING',
                 callerId: String(callData.callerId || ''),
@@ -113,7 +124,12 @@ const sendCallPushNotification = async (userId, callData) => {
             },
             android: {
                 priority: 'high',
-                ttl: 30000 // 30 seconds expiration
+                ttl: 30000,
+                notification: {
+                    channelId: 'call_channel',
+                    priority: 'max',
+                    visibility: 'public'
+                }
             },
             apns: {
                 headers: {
