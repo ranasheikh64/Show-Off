@@ -1,3 +1,19 @@
-[2026-10-12T09:58:00.357Z] Server init started. Node Version: v25.9.0
+[2026-10-14T04:42:18.845Z] Server init started. Node Version: v25.9.0
 LOG: Server is running on 0.0.0.0:5000
 LOG: Connected to MongoDB successfully.
+LOG: [RAW HTTP] Method: GET URL: / OriginalURL: /
+LOG: [RAW HTTP] Method: GET URL: /favicon.ico OriginalURL: /favicon.ico
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/register OriginalURL: /api/auth/register
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
+LOG: RECEIVED TOKEN: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFiNDkyMTJlNjVmYTUxMmI4ZGYyNzc1In0sImlhdCI6MTc5MTk1MzgwNCwiZXhwIjoxNzkyNTU4NjA0fQ.CChWfS3OFsA183Z1Jw2jY5o3BCdTUrJfD6qtZco2X38
+LOG: === TOKEN RECEIVED === Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNmFiNDkyMTJlNjVmYTUxMmI4ZGYyNzc1In0sImlhdCI6MTc5MTk1MzgwNCwiZXhwIjoxNzkyNTU4NjA0fQ.CChWfS3OFsA183Z1Jw2jY5o3BCdTUrJfD6qtZco2X38
+LOG: User connected: 6ab49212e65fa512b8df2775
+LOG: User disconnected: 6ab49212e65fa512b8df2775, Reason: transport close
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
+LOG: [RAW HTTP] Method: POST URL: /api/auth/login OriginalURL: /api/auth/login
