@@ -5,15 +5,6 @@ try {
     fs.writeFileSync(logFile, '[' + new Date().toISOString() + '] Server init started. Node Version: ' + process.version + '\n');
 } catch (e) { }
 
-process.on('uncaughtException', (err) => {
-    try { fs.appendFileSync(logFile, 'Uncaught Exception: ' + (err && err.stack ? err.stack : err) + '\n'); } catch (e) { }
-    process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    try { fs.appendFileSync(logFile, 'Unhandled Rejection: ' + reason + '\n'); } catch (e) { }
-});
-
 const origLog = console.log;
 const origErr = console.error;
 console.log = function (...args) {
@@ -24,6 +15,17 @@ console.error = function (...args) {
     try { fs.appendFileSync(logFile, 'ERROR: ' + args.join(' ') + '\n'); } catch (e) { }
     origErr.apply(console, args);
 };
+
+process.on('uncaughtException', (err) => {
+    try { fs.appendFileSync(logFile, 'Uncaught Exception: ' + (err && err.stack ? err.stack : err) + '\n'); } catch (e) { }
+    origErr('Uncaught Exception:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    try { fs.appendFileSync(logFile, 'Unhandled Rejection: ' + reason + '\n'); } catch (e) { }
+    origErr('Unhandled Rejection:', reason);
+});
 
 require('dotenv').config();
 const express = require('express');
